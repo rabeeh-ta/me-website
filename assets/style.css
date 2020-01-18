@@ -29,10 +29,6 @@ a:visited {
   text-decoration: none;
 }
 
-.project-cards {
-  max-width: 100px;
-}
-
 /* Buttons override */
 .btn {
   text-transform: uppercase;
