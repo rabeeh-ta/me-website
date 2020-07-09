@@ -139,6 +139,10 @@ a:visited {
   font-weight: 600;
 }
 
+.wrapper > div {
+  padding: 0 10px 0 25px;
+}
+
 .footer {
   background-color: #212121;
   margin-top: 30px;

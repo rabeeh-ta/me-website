@@ -31,13 +31,16 @@
   <!--typed js library-->
   <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.9"></script>
 
+  <!--vue.js-->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
 
   <!-- Bootstrap -->
   <link href="./assets/bootstrap.min.css" rel="stylesheet">
-  <link href="./assets/style.css" rel="stylesheet">
   <link href="./assets/themify-icons.css" rel="stylesheet">
   <link href='./assets/dosis-font.css' rel='stylesheet' type='text/css'>
 
+  <!--custom css-->
+  <link href="./assets/style.css" rel="stylesheet">
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".side-menu">
@@ -91,43 +94,31 @@
   <!-- End: Tickets -->
 
   <!-- Start: Schedule -->
-  <div class="container">
-    <div class="row me-row schedule" id="schedule">
-      <h2 class="row-title content-ct">Projects</h2>
-      <div class="col-md-12">
+  <div id="projectsVue">
+    <div class="container">
+      <div class="row me-row schedule" id="schedule">
+        <h2 class="row-title content-ct">{{name}}</h2>
+        <div class="wrapper">
 
-        <!-- Tab panes -->
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane fade in active" id="day-1">
-            <div class="row">
-              <div class="col-md-6">
-                <div class="media">
+          <!-- Tab panes -->
+          <div class="tab-content ">
+            <div role="tabpanel" class="tab-pane fade in active" id="day-1">
+              <div class="row" id="projects-main">
 
-                  <div class="media-body">
-                    <h3 class="media-heading">CJHSS-notes</h3>
-                    <h5>Website</h5>
-                    <p>Chemnad Jama-ath Heigher Secondary School Notes notes is a place where you can find all
-                      reference, sample question papers and also short notes for almost all the subjects. </p>
-                    <a href="https://github.com/rabeeh-ta/CJHSS-notes."><span class="ti-github"></span> Code</a>
+                <div class="" v-for="(repo) in myGitRepos" :key="repo.id">
+                  <div class="media">
+                    <div class="media-body">
+                      <h3 class="media-heading">{{repo.name}}</h3>
+                      <h5>{{repo.language}}</h5>
+                      <p>{{repo.description}}</p>
+                      <a :href="repo.html_url"><span class="ti-github"></span> Code</a>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="media">
-
-                  <div class="media-body">
-                    <h3 class="media-heading">
-                      covid-19-kerala-app</h3>
-                    <h5>Android App</h5>
-                    <p>A Flutter app build for looking the stats on the number of people effected, newly effected, total
-                      number and many other stats.</p>
-                    <a href="https://github.com/rabeeh-ta/covid-19-kerala-app"><span class="ti-github"></span> Code</a>
-                  </div>
-                </div>
-              </div>
-
             </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -178,10 +169,30 @@
   </div>
   <!-- End: Footer -->
 
+
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="./assets/my-script.js"></script>
   <script src="./assets/jquery.min.js"></script>
   <script src="./assets/bootstrap.min.js"></script>
+  <script>
+    var projectsVue = new Vue({
+      el: '#projectsVue',
+      data: {
+        name: 'Projects ',
+        myGitRepos: {}
+      },
+      created() {
+        fetch('https://api.github.com/users/rabeeh-ta/repos')
+          .then(response => response.json())
+          .then(data => {
+            this.myGitRepos = data.filter(data => {
+              return !data.fork
+            });
+          })
+          .catch(error => console.error(error))
+      }
+    })
+  </script>
 
 
 </body>
