@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="I am a developer">
+  <meta name="author" content="Rabeeh T A">
+  <title>Rabeeh T A</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135557322-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-135557322-1');
+  </script>
+
+  <!--icon for the tittie-->
+
+  <link rel='shortcut icon' type='image/png' href='./img/iconE.png' />
+
+
+  <!--typed js library-->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.9"></script>
+
+
+  <!-- Bootstrap -->
+  <link href="./assets/bootstrap.min.css" rel="stylesheet">
+  <link href="./assets/style.css" rel="stylesheet">
+  <link href="./assets/themify-icons.css" rel="stylesheet">
+  <link href='./assets/dosis-font.css' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body id="page-top" data-spy="scroll" data-target=".side-menu">
+
+  <div class="container-fluid">
+    <!-- Start: Header -->
+    <div class="row hero-header" id="home">
+
+      <h1>"<span id="typed"></span>"</h1>
+      <h3>Things i do.</h3>
+    </div>
+    <!-- End: Header -->
+  </div>
+
+  <div class="container">
+    <!-- Start: Desc -->
+    <div class="row me-row content-ct">
+      <h2 class="row-title">Find me on the internet.</h2>
+      <div class="social-section">
+        <ul class="social-list">
+          <li><a href="https://github.com/rabeeh-ta"><img class="social-logo" src="./img/github.svg" alt=""></a></li>
+          <li><a href="https://stackoverflow.com/users/10303855/rabeeh-t-a?tab=profile"><img class="social-logo"
+                src="./img/stackoverflow.svg" alt=""></a></li>
+          <li><a href="https://twitter.com/rabeeh_ta"><img class="social-logo" src="./img/twitter.svg" alt=""></a></li>
+          <li><a href="https://www.instagram.com/rabe.eh_/"><img class="social-logo" src="./img/instagram.svg"
+                alt=""></a></li>
+          <li><a href="https://www.linkedin.com/in/rabeeh-t-a-93a55817b/"><img class="social-logo"
+                src="./img/linkedin.svg" alt=""></a></li>
+        </ul>
+      </div>
+    </div>
+    <!-- End: Desc -->
+
+  </div>
+
+  <!-- Start: Tickets -->
+  <div class="container-fluid tickets" id="tickets">
+    <div class="row me-row content-ct">
+      <h2 class="row-title">About Me</h2>
+      <div class="col-md-4 col-sm-6 col-md-offset-2">
+        <p>I am a self taught Web Developer / Programmer for the past 2 years and is still learning for the long run. I
+          have my experties in HTML, CSS, JS and some other frameworks like Vue.js and Flutter, also do code C++ for my
+          DIY projects.</p>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <p>I love building this over buying so i do build a lot of things. I also write programmes for Arduinos and
+          other IOT boards which is my main hobby.</p>
+      </div>
+    </div>
+  </div>
+  <!-- End: Tickets -->
+
+  <!-- Start: Schedule -->
+  <div class="container">
+    <div class="row me-row schedule" id="schedule">
+      <h2 class="row-title content-ct">Projects</h2>
+      <div class="col-md-12">
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane fade in active" id="day-1">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="media">
+
+                  <div class="media-body">
+                    <h3 class="media-heading">CJHSS-notes</h3>
+                    <h5>Website</h5>
+                    <p>Chemnad Jama-ath Heigher Secondary School Notes notes is a place where you can find all
+                      reference, sample question papers and also short notes for almost all the subjects. </p>
+                    <a href="https://github.com/rabeeh-ta/CJHSS-notes."><span class="ti-github"></span> Code</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="media">
+
+                  <div class="media-body">
+                    <h3 class="media-heading">
+                      covid-19-kerala-app</h3>
+                    <h5>Android App</h5>
+                    <p>A Flutter app build for looking the stats on the number of people effected, newly effected, total
+                      number and many other stats.</p>
+                    <a href="https://github.com/rabeeh-ta/covid-19-kerala-app"><span class="ti-github"></span> Code</a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End: Schedule -->
+
+  <!-- Start: Footer -->
+  <div class="container-fluid footer">
+    <div class="row contact">
+      <div class="col-md-6 contact-form">
+        <h3 class="content-ct"><span class="ti-email"></span> WhatsApp Me</h3>
+        <form class="form-horizontal" data-toggle="validator" role="form">
+          <div class="form-group">
+            <label for="message" class="col-sm-3 control-label">Your Message<sup>*</sup></label>
+            <div class="col-sm-9">
+              <textarea id="message" class="form-control" rows="3" required></textarea>
+              <div class="help-block with-errors pull-right"></div>
+              <span class="form-control-feedback" aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <button type="submit" id="submit" name="submit" onclick="sendWhatsapp()"
+                class="btn btn-yellow pull-right">Send <span class="ti-arrow-right"></span></button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-4 col-md-offset-1 content-ct">
+        <h3><span class="ti-mobile"></span> Hit me up</h3>
+        <p>Hit me up if you have any project ideas or just say hey, always open for collaboration.</p>
+        <h3><span class="ti-game"></span> Gamer Life</h3>
+        <p>I do play a lot of Minecraft and run a server, maybe you can join us.</p>
+      </div>
+    </div>
+    <div class="row footer-credit">
+      <div class="col-md-6 col-sm-6">
+        <p>&copy; 2020, <a href="http://www.rabeeh.ml">Rabeeh T A</a> </p>
+      </div>
+      <div class="col-md-6 col-sm-6">
+        <ul class="footer-menu">
+          <li><a href="https://twitter.com/rabeeh_ta">Twitter</a></li>
+          <li><a href="https://www.instagram.com/rabe.eh_/">Instagram</a></li>
+          <li><a href="https://github.com/rabeeh-ta">Github</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- End: Footer -->
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="./assets/my-script.js"></script>
+  <script src="./assets/jquery.min.js"></script>
+  <script src="./assets/bootstrap.min.js"></script>
+
+
+</body>
+
+</html>
