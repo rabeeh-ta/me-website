@@ -1,5 +1,5 @@
 var typed = {
-  strings: ['Web dev', 'UI UX', 'DIY', 'Arduino', 'IOT', 'Flutter'],
+  strings: ['Web', 'Vue.js', 'Flutter', 'Arduino', 'IOT', 'UI'],
   typeSpeed: 100,
   backSpeed: 50,
   backDelay: 1000,
