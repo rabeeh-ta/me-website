@@ -2,7 +2,7 @@
 
 ## My Website
 
-This is my portfolio website where I showcase the things that I have built and have all my social handles.
+This is my portfolio website where I showcase the things that I have built, also you can leave me a message there.
 
 
 ### Technology used for building.
