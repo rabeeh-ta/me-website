@@ -186,7 +186,10 @@
           .then(response => response.json())
           .then(data => {
             this.myGitRepos = data.filter(data => {
-              return !data.fork
+              if (!data.ford && data.description != null) {
+                return data; // only return if the repo is not forked and there is description written
+              }
+
             });
           })
           .catch(error => console.error(error))
