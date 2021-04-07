@@ -29,6 +29,18 @@ a:visited {
   text-decoration: none;
 }
 
+#projects-main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.projects-card {
+  margin: 10px;
+  max-width: 360px;
+  min-width: 350px;
+}
+
 /* Buttons override */
 .btn {
   text-transform: uppercase;
@@ -286,6 +298,9 @@ ul.footer-menu li a:hover {
 
   ul.footer-menu {
     margin-top: 0;
+  }
+  .projects-card {
+    max-width: 250px;
   }
 }
 
