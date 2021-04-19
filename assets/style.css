@@ -78,6 +78,9 @@ a:visited {
   min-height: 300px;
   padding: 5em;
   color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .hero-header h1 {
   font-weight: bold;
@@ -91,7 +94,7 @@ a:visited {
 }
 
 .hero-header .btn {
-  margin-top: 3em;
+  margin-top: 2em;
 }
 .hero-header .rocket {
   max-width: 100%;
@@ -283,6 +286,9 @@ ul.footer-menu li a:hover {
     text-align: center;
     margin-top: 30px;
   }
+  .hero-header .btn {
+    margin: 2em;
+  }
 }
 
 /* iPad Portrait */
@@ -301,6 +307,9 @@ ul.footer-menu li a:hover {
   }
   .projects-card {
     max-width: 250px;
+  }
+  .hero-header .btn {
+    margin: 2em;
   }
 }
 
