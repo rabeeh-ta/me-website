@@ -33,12 +33,12 @@ a:visited {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .projects-card {
   margin: 10px;
-  max-width: 360px;
-  min-width: 350px;
+  max-width: 350px;
 }
 
 /* Buttons override */
@@ -260,7 +260,7 @@ ul.footer-menu li a:hover {
 
 /* Mobile */
 
-@media (max-width: 670px) {
+@media (min-width: 0px) and (max-width: 670px) {
   .hero-header h1 {
     font-size: 60px;
   }
@@ -286,6 +286,9 @@ ul.footer-menu li a:hover {
     text-align: center;
     margin-top: 30px;
   }
+  .projects-card {
+    max-width: 75%;
+  }
   .hero-header .btn {
     margin: 2em;
   }
@@ -306,7 +309,7 @@ ul.footer-menu li a:hover {
     margin-top: 0;
   }
   .projects-card {
-    max-width: 250px;
+    max-width: 350px;
   }
   .hero-header .btn {
     margin: 2em;
