@@ -193,6 +193,18 @@
               }
 
             });
+
+
+            // sort the list by the no of stars the repo has. ie, top rated repo should be first.            
+            for (var i = 0; i < this.myGitRepos.length; i++) {
+              for (var j = 0; j < this.myGitRepos.length - i - 1; j++) {
+                if (this.myGitRepos[j].watchers < this.myGitRepos[j + 1].watchers) {
+                  var temp = this.myGitRepos[j]; this.myGitRepos[j] = this.myGitRepos[j + 1];
+                  this.myGitRepos[j + 1] = temp;
+                }
+              }
+            }
+
           })
           .catch(error => console.error(error))
       }
