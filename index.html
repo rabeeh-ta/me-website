@@ -251,11 +251,23 @@
           .then(response => response.json())
           .then(data => {
             this.myGitRepos = data.filter(data => {
-              if (!data.ford && data.description != null) {
+              if (!data.fork && data.description != null) {
                 return data; // only return if the repo is not forked and there is description written
               }
 
             });
+
+
+            // only display repos with at least one star
+            var reposWithStar = [];
+            this.myGitRepos.forEach(element => {
+              if (element.stargazers_count > 0) {
+                reposWithStar.push(element)
+              }
+
+            });
+
+            this.myGitRepos = reposWithStar;
 
 
             // sort the list by the no of stars the repo has. ie, top rated repo should be first.            
