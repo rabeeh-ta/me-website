@@ -214,6 +214,9 @@ margin-right: 10px;
 
 .blog-post-section {
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .card {
   display: flex;
@@ -223,7 +226,8 @@ margin-right: 10px;
   border-radius: 10px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: 300px;
+  min-width: 275px;
+  max-width: 300px;
   margin:10px
 }
 .card-header img {
