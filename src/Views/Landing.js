@@ -4,10 +4,10 @@ import '../style.css';
 import githubLogo from '../img/github.svg';
 import linkedinLogo from '../img/linkedin.svg';
 import twitterLogo from '../img/twitter.svg';
-import stackoverflowLogo from '../img/stackoverflow.svg';
+import stackOverFlowLogo from '../img/stackoverflow.svg';
 import instagramLogo from '../img/instagram.svg';
 
-export default function Navbar() {
+export default function Landing() {
   return (
     <div className="container-fluid">
       <div className="row hero-header" id="home">
@@ -48,7 +48,7 @@ export default function Navbar() {
             </li>
             <li>
               <a href="https://stackoverflow.com/users/10303855/rabeeh-t-a?tab=profile">
-                <img className="social-logo" src={stackoverflowLogo} alt="" />
+                <img className="social-logo" src={stackOverFlowLogo} alt="" />
               </a>
             </li>
             <li>
