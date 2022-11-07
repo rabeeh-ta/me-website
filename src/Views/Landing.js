@@ -1,5 +1,6 @@
 import React from 'react';
 import '../style.css';
+import Typed from 'typed.js';
 
 import githubLogo from '../img/github.svg';
 import linkedinLogo from '../img/linkedin.svg';
@@ -8,13 +9,30 @@ import stackOverFlowLogo from '../img/stackoverflow.svg';
 import instagramLogo from '../img/instagram.svg';
 
 export default function Landing() {
+  const typedJs = React.useRef(null);
+  React.useEffect(() => {
+    const typed = new Typed(typedJs.current, {
+      strings: ['Web', 'React.js', 'Vue.js', 'Flutter', 'Ardiono IOT', 'UI UX'], // Strings to display
+      // Speed settings, try diffrent values untill you get good results
+      startDelay: 300,
+      typeSpeed: 150,
+      backSpeed: 100,
+      backDelay: 100,
+    });
+
+    // Destropying
+    return () => {
+      typed.destroy();
+    };
+  }, []);
+
   return (
     <div className="container-fluid">
       <div className="row hero-header" id="home">
         <h3>Things i do.</h3>
 
         <h1>
-          "<span id="typed"></span>"
+          "<span ref={typedJs}></span>"
         </h1>
 
         <a className="blog-btn" href="https://blog.rabeeh.ga">
