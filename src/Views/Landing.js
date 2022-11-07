@@ -14,10 +14,11 @@ export default function Landing() {
     const typed = new Typed(typedJs.current, {
       strings: ['Web', 'React.js', 'Vue.js', 'Flutter', 'Ardiono IOT', 'UI UX'], // Strings to display
       // Speed settings, try diffrent values untill you get good results
-      startDelay: 300,
-      typeSpeed: 150,
-      backSpeed: 100,
-      backDelay: 100,
+      typeSpeed: 100,
+      backSpeed: 50,
+      backDelay: 1000,
+      startDelay: 500,
+      loop: true,
     });
 
     // Destropying
