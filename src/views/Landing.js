@@ -12,7 +12,7 @@ export default function Landing() {
   const typedJs = React.useRef(null);
   React.useEffect(() => {
     const typed = new Typed(typedJs.current, {
-      strings: ['Web', 'React.js', 'Vue.js', 'Flutter', 'Ardiono IOT', 'UI UX'], // Strings to display
+      strings: ['Web', 'React.js', 'Flutter', 'Ardiono', 'IOT', 'UI UX'], // Strings to display
       // Speed settings, try diffrent values untill you get good results
       typeSpeed: 100,
       backSpeed: 50,
