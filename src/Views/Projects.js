@@ -42,6 +42,7 @@ export default function Projects() {
         lang={repo.language}
         description={repo.description}
         projectLink={repo.html_url}
+        key={repo.id}
       />
     );
   });
