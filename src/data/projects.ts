@@ -12,6 +12,7 @@ export const projects = [
     year: "2021",
     description:
       "chrome extension for quick stock analysis on screener, tickertape, trendlyne, tradingview",
+    github: "https://github.com/rabeeh-ta/dallalstreet-extension",
   },
   {
     name: "pace lab",
@@ -26,6 +27,7 @@ export const projects = [
     description:
       "python CLI script to print 10 letter characters on your github timeline",
     tech: "python",
+    github: "https://github.com/rabeeh-ta/the-github-showoff",
   },
   {
     name: "cjhss notes",
