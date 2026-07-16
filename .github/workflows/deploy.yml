@@ -1,0 +1,39 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+# Never run two deploys at once; queue them so a later push doesn't
+# race an in-progress deployment.
+concurrency:
+  group: deploy-cloudflare
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (OpenNext + Cloudflare)
+        run: npx opennextjs-cloudflare build
+
+      - name: Deploy to Cloudflare Workers
+        run: npx opennextjs-cloudflare deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
