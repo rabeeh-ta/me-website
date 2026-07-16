@@ -50,9 +50,9 @@ export default function Home() {
         ))}
       </div>
 
-      {/* projects */}
+      {/* builds */}
       <section className="mt-16">
-        <h2 className="text-lg font-semibold">projects</h2>
+        <h2 className="text-lg font-semibold">builds</h2>
         <hr className="border-border mt-2 mb-2" />
         <div className="divide-y divide-border">
           {projects.map((p) => (

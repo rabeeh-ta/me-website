@@ -1,5 +1,13 @@
 export const projects = [
   {
+    name: "manygit",
+    year: "2026",
+    description:
+      "a lazygit-style terminal UI for a folder full of git repos — see what's ahead, behind, or dirty across all of them at once",
+    tech: "go",
+    github: "https://github.com/rabeeh-ta/manygit",
+  },
+  {
     name: "stock trading app",
     year: "2022",
     description: "a stock trading simulation, DBMS mini project",
