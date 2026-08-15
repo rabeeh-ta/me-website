@@ -5,6 +5,7 @@ interface ProjectCardProps {
   url?: string;
   github?: string;
   stars?: number;
+  tags?: string[];
   tech?: string;
 }
 
@@ -15,6 +16,7 @@ export default function ProjectCard({
   url,
   github,
   stars,
+  tags,
 }: ProjectCardProps) {
   const link = url || github;
 
@@ -26,7 +28,7 @@ export default function ProjectCard({
             href={link}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium"
+            className="min-w-0 font-medium"
           >
             {name}
           </a>
@@ -34,6 +36,14 @@ export default function ProjectCard({
           <span className="font-medium">{name}</span>
         )}
         <div className="flex shrink-0 items-center gap-2">
+          {tags?.map((tag) => (
+            <span
+              key={tag}
+              className="rounded-sm border border-border px-1.5 py-0.5 text-[11px] leading-none text-muted"
+            >
+              {tag}
+            </span>
+          ))}
           {stars !== undefined ? (
             <span
               className="inline-flex items-center gap-1 rounded-sm border border-border px-1.5 py-0.5 text-[11px] leading-none text-muted"

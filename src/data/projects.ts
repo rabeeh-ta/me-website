@@ -5,10 +5,18 @@ export interface Project {
   url?: string;
   github?: string;
   stars?: number;
+  tags?: string[];
   tech?: string;
 }
 
 export const projects: Project[] = [
+  {
+    name: "replyr",
+    year: "2026",
+    description: "AI Instagram DM automation for Shopify product conversations",
+    url: "https://dmreplyr.app/",
+    tags: ["saas"],
+  },
   {
     name: "manygit",
     year: "2026",

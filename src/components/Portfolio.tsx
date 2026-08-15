@@ -19,14 +19,13 @@ const tabLabels: Record<Tab, string> = {
 function WorkItem() {
   return (
     <div className="py-3">
-      <div className="flex items-baseline justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">founding engineer</span>
+      <div className="flex items-start justify-between gap-4 sm:items-baseline">
+        <div className="flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:gap-2">
           <a
             href="https://www.blend-ed.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-sm bg-[#f1f4ff] p-1 dark:bg-white"
+            className="order-1 rounded-sm bg-[#f1f4ff] p-1 dark:bg-white sm:order-2"
             aria-label="Blend-ed"
           >
             <img
@@ -35,6 +34,7 @@ function WorkItem() {
               className="h-4 w-auto"
             />
           </a>
+          <span className="order-2 font-medium sm:order-1">founding engineer</span>
         </div>
         <span className="shrink-0 text-sm text-muted">2023 — present</span>
       </div>
@@ -59,7 +59,12 @@ function WritingList() {
       {writings.map((writing) => (
         <div key={writing.href} className="py-3">
           <div className="flex items-baseline justify-between gap-4">
-            <a href={writing.href} className="font-medium">
+            <a
+              href={writing.href}
+              target={writing.external ? "_blank" : undefined}
+              rel={writing.external ? "noopener noreferrer" : undefined}
+              className="min-w-0 font-medium"
+            >
               {writing.title}
             </a>
             <div className="flex shrink-0 items-center gap-2">
