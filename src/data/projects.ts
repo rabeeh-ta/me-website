@@ -1,4 +1,14 @@
-export const projects = [
+export interface Project {
+  name: string;
+  year: string;
+  description: string;
+  url?: string;
+  github?: string;
+  stars?: number;
+  tech?: string;
+}
+
+export const projects: Project[] = [
   {
     name: "manygit",
     year: "2026",
@@ -13,7 +23,6 @@ export const projects = [
     description: "a stock trading simulation, DBMS mini project",
     tech: "javascript",
     github: "https://github.com/rabeeh-ta/stock-trading-application-dbms-mini-project",
-    stars: 5,
   },
   {
     name: "dallalstreet extension",
@@ -27,7 +36,6 @@ export const projects = [
     year: "2021",
     description: "a site to share code files and VTU CSE lab resources",
     github: "https://github.com/rabeeh-ta/pace-lab",
-    stars: 10,
   },
   {
     name: "github show off",
@@ -49,6 +57,5 @@ export const projects = [
     year: "2019",
     description: "source codes for every CS practical, kerala syllabus",
     github: "https://github.com/rabeeh-ta/Kerala-Syllabus-CS-practicals",
-    stars: 5,
   },
 ];

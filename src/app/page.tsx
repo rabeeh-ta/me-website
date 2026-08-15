@@ -1,10 +1,13 @@
 import Image from "next/image";
 import ThemeToggle from "@/components/ThemeToggle";
-import ProjectCard from "@/components/ProjectCard";
+import Portfolio from "@/components/Portfolio";
 import { projects } from "@/data/projects";
 import { socials } from "@/data/socials";
+import { getProjectsWithStars } from "@/lib/github";
 
-export default function Home() {
+export default async function Home() {
+  const projectsWithStars = await getProjectsWithStars(projects);
+
   return (
     <main className="max-w-xl mx-auto px-6 py-16">
       {/* header */}
@@ -27,13 +30,13 @@ export default function Home() {
         <a href="https://blend-ed.com" target="_blank" rel="noopener noreferrer">
           blend-ed
         </a>
-        . i build things for the web, tinker with hardware, and play too much
-        minecraft.
+        . i build for the web, tinker with hardware, get nerdy about annual
+        reports once in a while, and play too much minecraft.
       </p>
 
       <p className="mt-3 text-sm text-muted leading-relaxed">
-        self-taught developer. been building stuff since 2019 — started with
-        HTML and arduino, now mostly javascript and whatever gets the job done.
+        CS grad / developer. been building stuff since 2019 — started with HTML
+        and arduino, now mostly javascript and whatever gets the job done.
       </p>
 
       {/* socials */}
@@ -50,16 +53,7 @@ export default function Home() {
         ))}
       </div>
 
-      {/* builds */}
-      <section className="mt-16">
-        <h2 className="text-lg font-semibold">builds</h2>
-        <hr className="border-border mt-2 mb-2" />
-        <div className="divide-y divide-border">
-          {projects.map((p) => (
-            <ProjectCard key={p.name} {...p} />
-          ))}
-        </div>
-      </section>
+      <Portfolio projects={projectsWithStars} />
 
       {/* footer */}
       <footer className="mt-16 pt-4 border-t border-border">

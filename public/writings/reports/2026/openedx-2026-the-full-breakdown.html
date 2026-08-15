@@ -1,0 +1,2263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open edX 2026 — The Full Breakdown</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+img, svg { max-width: 100%; }
+</style>
+<style>
+  /* Light is the default ground; dark only on explicit toggle. */
+  :root {
+    --ink:#16181D; --ink-2:#2B2F38; --paper:#F6F6F8; --surface:#FFFFFF;
+    --rule:#DEE0E6; --rule-2:#EAEBEF; --muted:#5C6270; --muted-2:#858B99;
+    --accent:#1F5C7A; --accent-w:#E8F0F4; --accent-h:#14425A;
+    --cat-steward:#8A5A2B; --cat-vendor:#1F5C7A; --cat-inst:#3F6B4A;
+    --cat-std:#6B4A7A; --cat-deploy:#7A3F4A;
+
+    /* Chart marks — validated set. The petrol accent above FAILS the chroma
+       floor (0.078, reads gray), so chrome and data use different colours. */
+    --series-1:#2a78d6;   /* additions / magnitude */
+    --series-2:#e34948;   /* removals */
+    --series-neutral:#C6C9D1;
+    --viz-grid:#EAEBEF;
+
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+    --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono",Menlo,Consolas,monospace;
+
+    --sp-2:.5rem; --sp-3:.75rem; --sp-4:1rem; --sp-5:1.5rem;
+    --sp-6:2rem; --sp-7:3rem; --sp-8:4.5rem; --maxw:74rem;
+  /* light-only: keeps native controls and scrollbars light on a dark OS */
+  color-scheme: light;
+  }
+  
+
+  body { background:var(--paper); color:var(--ink); font-family:var(--sans);
+         font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:var(--maxw); margin:0 auto; padding:0 var(--sp-5) var(--sp-8); }
+  a { color:var(--accent); text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);
+      text-underline-offset:2px; transition:color .15s; }
+  a:hover { color:var(--accent-h); text-decoration-color:currentColor; }
+  a:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:3px; }
+
+  .masthead { padding:var(--sp-8) 0 var(--sp-6); border-bottom:1px solid var(--rule); }
+  .kicker { font-family:var(--mono); font-size:.7rem; letter-spacing:.14em;
+            text-transform:uppercase; color:var(--muted-2); margin-bottom:var(--sp-4); }
+  h1 { font-family:var(--serif); font-weight:600; font-size:clamp(2.2rem,5.5vw,3.6rem);
+       line-height:1.05; letter-spacing:-.015em; text-wrap:balance; margin:0 0 var(--sp-4); }
+  .dek { font-size:1.0625rem; color:var(--muted); max-width:48rem; margin:0 0 var(--sp-5); }
+  .dek strong { color:var(--ink-2); font-weight:600; }
+  .meta-row { display:flex; flex-wrap:wrap; gap:var(--sp-2) var(--sp-5);
+              font-family:var(--mono); font-size:.72rem; letter-spacing:.04em; color:var(--muted-2); }
+  .meta-row b { color:var(--ink-2); font-weight:600; font-variant-numeric:tabular-nums; }
+
+  .jump { position:sticky; top:0; z-index:20;
+          background:color-mix(in srgb,var(--paper) 92%,transparent);
+          backdrop-filter:blur(10px); border-bottom:1px solid var(--rule); margin-bottom:var(--sp-7); }
+  .jump-inner { max-width:var(--maxw); margin:0 auto; padding:var(--sp-3) var(--sp-5);
+                display:flex; gap:var(--sp-2); overflow-x:auto; scrollbar-width:thin; }
+  .chip { flex:0 0 auto; font-family:var(--mono); font-size:.7rem; letter-spacing:.06em;
+          text-transform:uppercase; text-decoration:none; color:var(--muted);
+          border:1px solid var(--rule); border-radius:2px; padding:.35rem .6rem; white-space:nowrap; }
+  .chip:hover { color:var(--ink); border-color:var(--muted-2); background:var(--surface); }
+
+  h2 { font-family:var(--serif); font-weight:600; font-size:clamp(1.4rem,2.8vw,1.9rem);
+       letter-spacing:-.01em; margin:0; text-wrap:balance; }
+  .group { margin-bottom:var(--sp-8); scroll-margin-top:4.5rem; }
+  .group-head { display:flex; align-items:baseline; gap:var(--sp-4); padding-bottom:var(--sp-3);
+                border-bottom:2px solid var(--ink); margin-bottom:var(--sp-5); }
+  .group-head h2 { flex:1 1 auto; }
+  .group-head .count { font-family:var(--mono); font-size:.72rem; color:var(--muted-2); flex:0 0 auto; }
+  h3 { font-family:var(--serif); font-weight:600; font-size:1.2rem; margin:var(--sp-6) 0 var(--sp-3);
+       letter-spacing:-.005em; text-wrap:balance; }
+  p { max-width:70ch; margin:0 0 var(--sp-4); }
+  .lede { font-size:1.02rem; color:var(--muted); max-width:60ch; }
+  ul, ol { max-width:70ch; padding-left:1.2rem; margin:0 0 var(--sp-4); }
+  li { margin-bottom:var(--sp-2); }
+  blockquote { margin:var(--sp-4) 0; padding:var(--sp-3) 0 var(--sp-3) var(--sp-4);
+               border-left:3px solid var(--accent); color:var(--ink-2);
+               font-family:var(--serif); font-size:1.05rem; max-width:62ch; }
+
+  /* --- stat tiles --- */
+  .stats { display:grid; gap:var(--sp-3); grid-template-columns:repeat(auto-fit,minmax(10.5rem,1fr));
+           margin:var(--sp-5) 0 var(--sp-6); }
+  .stat { background:var(--surface); border:1px solid var(--rule); border-radius:2px;
+          padding:var(--sp-4); display:flex; flex-direction:column; gap:.15rem; }
+  .stat-n { font-family:var(--serif); font-size:1.85rem; font-weight:600; line-height:1;
+            letter-spacing:-.02em; font-variant-numeric:tabular-nums; color:var(--ink); }
+  .stat-l { font-size:.8125rem; color:var(--muted); }
+  .stat a { font-family:var(--mono); font-size:.64rem; color:var(--muted-2); text-decoration:none; margin-top:.2rem; }
+  .stat a:hover { color:var(--accent-h); }
+
+  /* --- charts --- */
+  .figure { background:var(--surface); border:1px solid var(--rule); border-radius:2px;
+            padding:var(--sp-5); margin:var(--sp-5) 0 var(--sp-6); }
+  .fig-title { font-family:var(--sans); font-weight:600; font-size:.95rem; margin:0 0 .2rem; color:var(--ink); }
+  .fig-sub { font-size:.8125rem; color:var(--muted); margin:0 0 var(--sp-4); max-width:62ch; }
+  /* prose keeps a readable measure; the numbers sit beside it so the card has one right edge */
+  .fig-split { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+               gap:var(--sp-5); align-items:start; }
+  .fig-split .fig-sub:last-child { margin-bottom:0; }
+  .fig-split .stats { grid-template-columns:1fr 1fr; margin:0; }
+  @media (max-width:54rem) {
+    .fig-split { grid-template-columns:1fr; gap:var(--sp-4); }
+    .fig-split .fig-sub:last-child { margin-bottom:var(--sp-4); }
+  }
+  .legend { display:flex; flex-wrap:wrap; gap:var(--sp-4); margin-bottom:var(--sp-4);
+            font-size:.75rem; color:var(--muted); }
+  .legend span { display:inline-flex; align-items:center; gap:.4rem; }
+  .swatch { width:10px; height:10px; border-radius:2px; flex:0 0 auto; }
+
+  .bars { display:grid; gap:.4rem; }
+  .bar-row { display:grid; grid-template-columns:minmax(7.5rem,11rem) 1fr auto;
+             gap:var(--sp-3); align-items:center; }
+  .bar-lab { font-size:.8125rem; color:var(--ink-2); text-align:right; }
+  .bar-track { position:relative; height:20px; background:var(--viz-grid); border-radius:2px; }
+  .bar-fill { position:absolute; top:0; bottom:0; border-radius:2px;
+              transition:filter .15s; }
+  .bar-row:hover .bar-fill { filter:brightness(1.08); }
+  .bar-val { font-family:var(--mono); font-size:.78rem; font-variant-numeric:tabular-nums;
+             color:var(--ink-2); min-width:4.2rem; text-align:right; }
+  .bar-row.total .bar-lab, .bar-row.total .bar-val { font-weight:700; color:var(--ink); }
+  .bar-row.total .bar-track { background:transparent; }
+  @media (max-width:34rem) {
+    .bar-row { grid-template-columns:1fr auto; }
+    .bar-lab { text-align:left; grid-column:1; }
+    .bar-track { grid-column:1 / -1; grid-row:2; }
+  }
+
+  /* --- expandable gap list --- */
+  .gaps { display:grid; gap:0; border:1px solid var(--rule); border-radius:2px;
+          background:var(--surface); margin:var(--sp-4) 0 var(--sp-5); }
+  .gaps details + details { border-top:1px solid var(--rule-2); }
+  .gaps summary { cursor:pointer; padding:.7rem var(--sp-4) .7rem 2.1rem; position:relative;
+                  font-size:.875rem; color:var(--ink-2); list-style:none; }
+  .gaps summary::-webkit-details-marker { display:none; }
+  .gaps summary::marker { content:""; }
+  .gaps summary::before { content:"+"; position:absolute; left:var(--sp-4); top:.62rem;
+                          font-family:var(--mono); font-size:.95rem; line-height:1;
+                          color:var(--accent); }
+  .gaps details[open] summary::before { content:"–"; }
+  .gaps summary b { color:var(--ink); font-weight:600; }
+  .gaps summary span { color:var(--muted); }
+  .gaps summary:hover { background:var(--paper); }
+  .gaps summary:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
+  .gaps .gap-body { padding:0 var(--sp-4) var(--sp-4) 2.1rem; }
+  .gaps .gap-body p { font-size:.8125rem; color:var(--muted); max-width:76ch; margin:0 0 .6rem; }
+  .gaps .gap-body p:last-child { margin-bottom:0; }
+  .gaps .gap-body b { color:var(--ink-2); }
+
+  details.datatable { margin-top:var(--sp-4); }
+  details.datatable summary { font-family:var(--mono); font-size:.7rem; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--muted); cursor:pointer; }
+  details.datatable summary:hover { color:var(--accent-h); }
+  .tblwrap { overflow-x:auto; margin-top:var(--sp-3); }
+  table { border-collapse:collapse; width:100%; font-size:.85rem; }
+  th, td { text-align:left; padding:.45rem .7rem; border-bottom:1px solid var(--rule-2); }
+  th { font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase;
+       color:var(--muted-2); font-weight:500; }
+  td.num { font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right; }
+
+  .maintable { background:var(--surface); border:1px solid var(--rule); border-radius:2px;
+               padding:var(--sp-4) var(--sp-5); margin:var(--sp-5) 0 var(--sp-6); overflow-x:auto; }
+  .pill { font-family:var(--mono); font-size:.62rem; letter-spacing:.06em; text-transform:uppercase;
+          border:1px solid currentColor; border-radius:2px; padding:.05rem .3rem; white-space:nowrap; }
+  .p-ship { color:#1b7a4b; } .p-part { color:#8A5A2B; } .p-none { color:#9A3B3B; }
+  
+  
+  
+
+  .src { font-family:var(--mono); font-size:.64rem; letter-spacing:.03em; text-decoration:none;
+         color:var(--muted); border:1px solid var(--rule); border-radius:2px; padding:.08rem .3rem;
+         white-space:nowrap; }
+  .src:hover { color:var(--accent-h); border-color:var(--accent); background:var(--accent-w); }
+  .src::before { content:"▶ "; }
+  .fact { border-bottom:1px dotted var(--muted-2); text-decoration:none; }
+  .fact:hover { border-bottom-style:solid; }
+
+  .ranked { counter-reset:r; list-style:none; padding:0; max-width:100%; }
+  .ranked li { counter-increment:r; display:grid; grid-template-columns:2rem 1fr; gap:var(--sp-3);
+               padding:var(--sp-3) 0; border-bottom:1px solid var(--rule-2); margin:0; }
+  .ranked li::before { content:counter(r); font-family:var(--mono); font-size:.8rem;
+                       color:var(--muted-2); font-variant-numeric:tabular-nums; }
+  .ranked b { font-family:var(--serif); font-weight:600; font-size:1rem; }
+
+  .who { display:grid; gap:var(--sp-4); }
+  @media (min-width:52rem) { .who { grid-template-columns:1fr 1fr; column-gap:var(--sp-6); } }
+  .whoblock { background:var(--surface); border:1px solid var(--rule);
+              border-left:3px solid var(--cat,var(--accent)); border-radius:2px; padding:var(--sp-4) var(--sp-5); }
+  .whoblock h4 { font-family:var(--serif); font-size:1.05rem; font-weight:600; margin:0 0 .15rem; }
+  .whoblock .org-what { font-size:.8125rem; color:var(--muted); margin:0 0 var(--sp-3); }
+  .whoblock ul { list-style:none; padding:0; margin:0; }
+  .whoblock li { font-size:.85rem; margin-bottom:.45rem; color:var(--ink-2); }
+  .whoblock li b { font-weight:600; color:var(--ink); }
+  .whoblock details { margin-top:var(--sp-3); border-top:1px solid var(--rule-2); padding-top:var(--sp-3); }
+  .whoblock summary { font-family:var(--mono); font-size:.68rem; letter-spacing:.07em;
+    text-transform:uppercase; color:var(--accent); cursor:pointer; list-style:none;
+    display:flex; align-items:center; gap:.4rem; }
+  .whoblock summary::-webkit-details-marker { display:none; }
+  .whoblock summary::before { content:"+"; font-size:.9rem; line-height:1; width:.8rem;
+    display:inline-block; text-align:center; }
+  .whoblock details[open] summary::before { content:"–"; }
+  .whoblock summary:hover { color:var(--accent-h); }
+  .whoblock summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
+  .profile { margin-top:var(--sp-3); font-size:.85rem; color:var(--ink-2); }
+  .profile p { margin:0 0 var(--sp-3); max-width:100%; }
+  .profile p:last-child { margin-bottom:0; }
+  .profile b { color:var(--ink); }
+  .facts { display:grid; grid-template-columns:auto 1fr; gap:.3rem var(--sp-3);
+    margin:0 0 var(--sp-3); font-size:.8rem; }
+  .facts dt { font-family:var(--mono); font-size:.66rem; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--muted-2); padding-top:.15rem; }
+  .facts dd { margin:0; color:var(--ink-2); }
+  .why { border-left:2px solid var(--accent); padding-left:var(--sp-3); margin:var(--sp-3) 0 0; }
+  .why b { display:block; font-family:var(--mono); font-size:.62rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--accent); margin-bottom:.2rem; }
+
+  .srcgrid { display:grid; gap:var(--sp-4); }
+  @media (min-width:46rem) { .srcgrid { grid-template-columns:1fr 1fr; column-gap:var(--sp-6); } }
+  .srcblock { background:var(--surface); border:1px solid var(--rule); border-radius:2px; padding:var(--sp-4) var(--sp-5); }
+  .srcblock h4 { font-family:var(--mono); font-size:.68rem; letter-spacing:.12em; text-transform:uppercase;
+                 color:var(--accent); margin:0 0 var(--sp-3); }
+  .srcblock li { font-size:.85rem; margin-bottom:var(--sp-2); }
+
+  .caveat { margin-top:var(--sp-7); padding:var(--sp-5); border:1px dashed var(--rule);
+            border-radius:2px; background:var(--accent-w); font-size:.875rem; color:var(--ink-2); }
+  .caveat h4 { font-family:var(--mono); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase;
+               color:var(--accent); margin:0 0 var(--sp-2); }
+  .caveat code { font-family:var(--mono); font-size:.82em; background:var(--surface);
+                 border:1px solid var(--rule); border-radius:2px; padding:.05rem .25rem; }
+
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; animation:none !important; } }
+
+  /* --- inline org glossary --- */
+  button.orgref {
+    font:inherit; color:inherit; background:none; border:0; padding:0; margin:0;
+    cursor:pointer; border-bottom:1px dashed color-mix(in srgb,var(--accent) 55%,transparent);
+    transition:background .12s,border-color .12s;
+  }
+  button.orgref:hover, button.orgref[aria-expanded="true"] {
+    background:var(--accent-w); border-bottom-color:var(--accent);
+  }
+  button.orgref:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
+
+  #orgcard {
+    position:absolute; z-index:60; width:min(23rem,calc(100vw - 2rem));
+    background:var(--surface); border:1px solid var(--rule);
+    border-left:3px solid var(--accent);
+    border-radius:3px; padding:var(--sp-4) var(--sp-4) var(--sp-3);
+    box-shadow:0 8px 28px rgba(16,18,22,.16), 0 2px 6px rgba(16,18,22,.08);
+    font-size:.85rem; line-height:1.5; color:var(--ink-2);
+  }
+  
+  #orgcard[hidden] { display:none; }
+  #orgcard .oc-kind { font-family:var(--mono); font-size:.6rem; letter-spacing:.11em;
+    text-transform:uppercase; color:var(--accent); }
+  #orgcard h5 { font-family:var(--serif); font-size:1.08rem; font-weight:600; margin:.15rem 0 .1rem;
+    color:var(--ink); letter-spacing:-.01em; }
+  #orgcard .oc-meta { font-family:var(--mono); font-size:.66rem; color:var(--muted-2);
+    margin-bottom:var(--sp-3); }
+  #orgcard p { margin:0 0 var(--sp-3); max-width:100%; }
+  #orgcard .oc-why { border-top:1px solid var(--rule-2); padding-top:var(--sp-3); margin:0;
+    color:var(--ink-2); }
+  #orgcard .oc-why b { display:block; font-family:var(--mono); font-size:.6rem; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--muted-2); margin-bottom:.2rem; }
+  #orgcard .oc-close { position:absolute; top:.4rem; right:.5rem; background:none; border:0;
+    font:inherit; font-size:1.1rem; line-height:1; color:var(--muted-2); cursor:pointer; padding:.2rem .35rem; }
+  #orgcard .oc-close:hover { color:var(--ink); }
+  #orgcard .oc-links { margin-top:var(--sp-3); display:flex; gap:var(--sp-3); flex-wrap:wrap;
+    font-family:var(--mono); font-size:.66rem; }
+
+  /* --- jargon: hover or focus for a plain-English definition --- */
+  .jt { border-bottom:1px dashed var(--muted-2); cursor:help; }
+  .jt:hover, .jt:focus-visible { border-bottom-color:var(--accent); color:var(--accent-h); }
+  .jt:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
+  #jtip { position:fixed; z-index:70; max-width:min(24rem,calc(100vw - 16px));
+    background:var(--ink); color:var(--paper); font-family:var(--sans); font-size:.78rem;
+    line-height:1.5; padding:.5rem .65rem; border-radius:3px; pointer-events:none;
+    box-shadow:0 6px 22px rgba(16,18,22,.22); }
+  
+  #jtip[hidden] { display:none; }
+
+/* ===== speaker directory (scoped) ===== */
+
+
+
+
+/* ---------- base ---------- */
+
+#people-directory .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 var(--sp-5) var(--sp-8); }
+#people-directory a{ color:var(--accent); text-decoration-color:color-mix(in srgb,var(--accent) 35%,transparent);
+    text-underline-offset:2px; transition:color .15s; }
+#people-directory a:hover{ color:var(--accent-h); text-decoration-color:currentColor; }
+#people-directory a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:3px; }
+
+/* ---------- masthead ---------- */
+#people-directory .masthead{ padding:var(--sp-8) 0 var(--sp-6); border-bottom:1px solid var(--rule); }
+#people-directory .kicker{ font-family:var(--mono); font-size:.7rem; letter-spacing:.14em;
+          text-transform:uppercase; color:var(--muted-2); margin-bottom:var(--sp-4); }
+#people-directory h1{ font-family:var(--serif); font-weight:600; font-size:clamp(2.2rem,5.5vw,3.6rem);
+     line-height:1.05; letter-spacing:-.015em; text-wrap:balance; margin:0 0 var(--sp-4); }
+#people-directory .dek{ font-size:1.0625rem; color:var(--muted); max-width:48rem; margin:0 0 var(--sp-5); }
+#people-directory .dek strong{ color:var(--ink-2); font-weight:600; }
+#people-directory .meta-row{ display:flex; flex-wrap:wrap; gap:var(--sp-2) var(--sp-5);
+            font-family:var(--mono); font-size:.72rem; letter-spacing:.04em; color:var(--muted-2); }
+#people-directory .meta-row b{ color:var(--ink-2); font-weight:600; font-variant-numeric:tabular-nums; }
+
+/* ---------- structure & prose ---------- */
+#people-directory h2{ font-family:var(--serif); font-weight:600; font-size:clamp(1.4rem,2.8vw,1.9rem);
+     letter-spacing:-.01em; margin:0; text-wrap:balance; }
+#people-directory h3{ font-family:var(--serif); font-weight:600; font-size:1.2rem; margin:var(--sp-6) 0 var(--sp-3); }
+#people-directory .group{ margin-bottom:var(--sp-8); scroll-margin-top:4.5rem; }
+#people-directory .group-head{ display:flex; align-items:baseline; gap:var(--sp-4); padding-bottom:var(--sp-3);
+              border-bottom:2px solid var(--ink); margin-bottom:var(--sp-5); }
+#people-directory .group-head h2{ flex:1 1 auto; }
+#people-directory .group-head .count{ font-family:var(--mono); font-size:.72rem; color:var(--muted-2); flex:0 0 auto; }
+#people-directory p{ max-width:70ch; margin:0 0 var(--sp-4); }
+#people-directory .lede{ font-size:1.02rem; color:var(--muted); max-width:62ch; }
+
+/* ---------- stat tiles ---------- */
+#people-directory .stats{ display:grid; gap:var(--sp-3); grid-template-columns:repeat(auto-fit,minmax(10.5rem,1fr));
+         margin:var(--sp-5) 0 var(--sp-6); }
+#people-directory .stat{ background:var(--surface); border:1px solid var(--rule); border-radius:2px;
+        padding:var(--sp-4); display:flex; flex-direction:column; gap:.15rem; }
+#people-directory .stat-n{ font-family:var(--serif); font-size:1.85rem; font-weight:600; line-height:1;
+          letter-spacing:-.02em; font-variant-numeric:tabular-nums; color:var(--ink); }
+#people-directory .stat-l{ font-size:.8125rem; color:var(--muted); }
+
+/* ---------- citation chip ---------- */
+#people-directory .src{ font-family:var(--mono); font-size:.64rem; letter-spacing:.03em; text-decoration:none;
+       color:var(--muted); border:1px solid var(--rule); border-radius:2px; padding:.14rem .38rem;
+       white-space:nowrap; background:var(--surface); }
+#people-directory .src:hover{ color:var(--accent-h); border-color:var(--accent); background:var(--accent-w); }
+#people-directory .src::before{ content:"\25B6\A0"; }
+
+/* ---------- filter bar ---------- */
+#people-directory .filters{ position:sticky; top:0; z-index:20;
+  background:color-mix(in srgb,var(--paper) 94%,transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--rule);
+  padding:var(--sp-3) 0; margin-bottom:var(--sp-5); }
+#people-directory .filters-inner{ display:grid; gap:var(--sp-3);
+  grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr)) auto; align-items:end; }
+@media (max-width:60rem) { #people-directory .filters-inner{ grid-template-columns:1fr 1fr; } }
+@media (max-width:34rem) { #people-directory .filters-inner{ grid-template-columns:1fr; } }
+#people-directory .field{ display:flex; flex-direction:column; gap:.25rem; min-width:0; }
+#people-directory .field label{ font-family:var(--mono); font-size:.62rem; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted-2); }
+#people-directory .field input,#people-directory .field select{ font-family:var(--sans); font-size:.82rem; color:var(--ink);
+  background:var(--surface); border:1px solid var(--rule); border-radius:2px;
+  padding:.42rem .55rem; width:100%; min-width:0; }
+#people-directory .field input:focus-visible,#people-directory .field select:focus-visible{
+  outline:2px solid var(--accent); outline-offset:1px; }
+#people-directory button.clear{ font-family:var(--mono); font-size:.66rem; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--muted); background:var(--surface);
+  border:1px solid var(--rule); border-radius:2px; padding:.48rem .7rem; cursor:pointer;
+  white-space:nowrap; }
+#people-directory button.clear:hover{ color:var(--ink); border-color:var(--muted-2); }
+#people-directory button.clear:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+#people-directory .resultline{ font-family:var(--mono); font-size:.68rem; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--muted-2); margin-top:var(--sp-3); }
+#people-directory .resultline b{ color:var(--ink-2); font-variant-numeric:tabular-nums; }
+
+/* ---------- people list ---------- */
+#people-directory .people{ background:var(--surface); border:1px solid var(--rule); border-radius:2px; }
+#people-directory .phead,#people-directory .prow{ display:grid; gap:var(--sp-3);
+  grid-template-columns:minmax(0,1.35fr) minmax(0,.95fr) minmax(0,1.5fr) auto;
+  align-items:start; padding:.65rem var(--sp-4); }
+#people-directory .phead{ font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted-2); border-bottom:1px solid var(--rule); position:sticky; top:0; }
+#people-directory .prow + .prow{ border-top:1px solid var(--rule-2); }
+#people-directory .prow:hover{ background:var(--paper); }
+#people-directory .pname{ display:block; font-family:var(--serif); font-size:1rem; font-weight:600;
+  color:var(--ink); line-height:1.25; }
+#people-directory .pname.anon{ font-family:var(--sans); font-size:.85rem; font-weight:600; color:var(--muted); }
+#people-directory .prole{ display:block; font-size:.78rem; color:var(--muted); margin-top:.1rem; }
+#people-directory .porg{ font-size:.82rem; color:var(--ink-2); }
+#people-directory .porg small{ display:block; font-family:var(--mono); font-size:.6rem; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted-2); margin-top:.15rem; }
+#people-directory .pttitle{ display:block; font-size:.82rem; color:var(--ink-2); line-height:1.35; }
+#people-directory .ptags{ display:flex; flex-wrap:wrap; gap:.25rem; margin-top:.3rem; }
+#people-directory .ptag{ font-family:var(--mono); font-size:.58rem; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--muted); border:1px solid var(--rule-2); border-radius:2px; padding:.05rem .28rem;
+  background:var(--paper); }
+#people-directory .pjump{ justify-self:end; padding-top:.15rem; }
+#people-directory .pnote{ grid-column:1 / -1; font-size:.75rem; color:var(--muted-2); font-style:italic;
+  margin-top:.25rem; }
+#people-directory .empty{ padding:var(--sp-6) var(--sp-4); text-align:center; color:var(--muted); font-size:.9rem; }
+@media (max-width:60rem) {
+  #people-directory .phead{ display:none; }
+  #people-directory .prow{ grid-template-columns:1fr auto; row-gap:.35rem; }
+  #people-directory .prow .porg,#people-directory .prow .ptalk{ grid-column:1; }
+  #people-directory .pjump{ grid-row:1; grid-column:2; }
+}
+
+/* ---------- accordion ---------- */
+#people-directory .accordion{ display:grid; gap:0; border:1px solid var(--rule); border-radius:2px;
+  background:var(--surface); margin:var(--sp-4) 0 var(--sp-5); }
+#people-directory .accordion details + details{ border-top:1px solid var(--rule-2); }
+#people-directory .accordion summary{ cursor:pointer; padding:.7rem var(--sp-4) .7rem 2.1rem; position:relative;
+  font-size:.875rem; color:var(--ink-2); list-style:none; }
+#people-directory .accordion summary::-webkit-details-marker{ display:none; }
+#people-directory .accordion summary::marker{ content:""; }
+#people-directory .accordion summary::before{ content:"+"; position:absolute; left:var(--sp-4); top:.62rem;
+  font-family:var(--mono); font-size:.95rem; line-height:1; color:var(--accent); }
+#people-directory .accordion details[open] summary::before{ content:"\2013"; }
+#people-directory .accordion summary b{ color:var(--ink); font-weight:600; }
+#people-directory .accordion summary span{ color:var(--muted); }
+#people-directory .accordion summary:hover{ background:var(--paper); }
+#people-directory .accordion summary:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+#people-directory .accordion .acc-body{ padding:0 var(--sp-4) var(--sp-4) 2.1rem; }
+#people-directory .accordion .acc-body p{ font-size:.8125rem; color:var(--muted); max-width:76ch; margin:0 0 .6rem; }
+#people-directory .accordion .acc-body p:last-child{ margin-bottom:0; }
+#people-directory .accordion .acc-body b{ color:var(--ink-2); }
+
+/* ---------- bar chart ---------- */
+#people-directory .bars{ display:grid; gap:.4rem; }
+#people-directory .bar-row{ display:grid; grid-template-columns:minmax(9rem,14rem) 1fr auto;
+  gap:var(--sp-3); align-items:center; }
+#people-directory .bar-lab{ font-size:.8125rem; color:var(--ink-2); text-align:right; }
+#people-directory .bar-track{ position:relative; height:18px; background:var(--viz-grid); border-radius:2px; }
+#people-directory .bar-fill{ position:absolute; top:0; bottom:0; left:0; border-radius:2px; background:var(--series-1); }
+#people-directory .bar-val{ font-family:var(--mono); font-size:.76rem; font-variant-numeric:tabular-nums;
+  color:var(--ink-2); min-width:2.6rem; text-align:right; }
+@media (max-width:34rem) {
+  #people-directory .bar-row{ grid-template-columns:1fr auto; }
+  #people-directory .bar-lab{ text-align:left; grid-column:1; }
+  #people-directory .bar-track{ grid-column:1 / -1; grid-row:2; }
+}
+#people-directory .figure{ background:var(--surface); border:1px solid var(--rule); border-radius:2px;
+  padding:var(--sp-5); margin:var(--sp-5) 0 var(--sp-6); }
+#people-directory .fig-title{ font-family:var(--sans); font-weight:600; font-size:.95rem; margin:0 0 .2rem; color:var(--ink); }
+#people-directory .fig-sub{ font-size:.8125rem; color:var(--muted); margin:0 0 var(--sp-4); max-width:62ch; }
+
+/* ---------- jargon tooltip ---------- */
+#people-directory .jt{ border-bottom:1px dashed var(--muted-2); cursor:help; }
+#people-directory .jt:hover,#people-directory .jt:focus-visible{ border-bottom-color:var(--accent); color:var(--accent-h); }
+#people-directory .jt:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
+#people-directory #jtip{ position:fixed; z-index:70; max-width:min(24rem,calc(100vw - 16px));
+  background:var(--ink); color:var(--paper); font-family:var(--sans); font-size:.78rem;
+  line-height:1.5; padding:.5rem .65rem; border-radius:3px; pointer-events:none;
+  box-shadow:0 6px 22px rgba(16,18,22,.22); }
+
+#people-directory #jtip[hidden]{ display:none; }
+
+/* ---------- caveat ---------- */
+#people-directory .caveat{ background:var(--surface); border:1px solid var(--rule); border-left:3px solid var(--muted-2);
+  border-radius:2px; padding:var(--sp-4) var(--sp-5); margin:var(--sp-5) 0;
+  font-size:.85rem; color:var(--muted); }
+#people-directory .caveat b{ color:var(--ink-2); }
+#people-directory .caveat p{ max-width:78ch; }
+#people-directory .caveat p:last-child{ margin-bottom:0; }
+
+@media (prefers-reduced-motion: reduce) {
+  
+}
+
+</style>
+</head>
+<body>
+<div class="jump">
+  <nav class="jump-inner" aria-label="Jump to section">
+    <a class="chip" href="#shifts">Five shifts</a>
+    <a class="chip" href="#state">State of the platform</a>
+    <a class="chip" href="#shipped">What shipped</a>
+    <a class="chip" href="#ai">AI</a>
+    <a class="chip" href="#skills">Skills &amp; credentials</a>
+    <a class="chip" href="#scale">National scale</a>
+    <a class="chip" href="#tensions">Tensions</a>
+    <a class="chip" href="#watch">Talks to watch</a>
+    <a class="chip" href="#who">Who's who</a>
+    <a class="chip" href="#sources">Sources</a>
+      <a href="#people-directory">Speaker directory</a>
+  </nav>
+</div>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="kicker">Open edX Conference 2026 · Salt Lake City · Hosted by WGU</div>
+    <h1>The full breakdown</h1>
+    <p class="dek">
+      A synthesis of all <strong>57 conference talks</strong> — the structural shifts, what
+      genuinely shipped versus what's still only a plan, the arguments the community is having,
+      and the numbers worth carrying. Every claim links to the second it was said.
+    </p>
+    <div class="meta-row">
+      <span><b>57</b> talks · <b>291,121</b> words</span>
+      <span><b>12</b> countries</span>
+      <span>Prior convening: <b>Paris, July 2025</b></span>
+      <span><a href="https://www.youtube.com/playlist?list=PL87xhvJSz2W7pNbo3QEMTdSYoiNxSU2gm">Full playlist</a></span>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><span class="stat-n">145M</span><span class="stat-l">learners claimed by Axim (floor estimate)</span><a href="https://www.youtube.com/watch?v=JYUU_S2y_m0&t=316s">▶ Talk 05 · 5:16</a></div>
+    <div class="stat"><span class="stat-n">1,537</span><span class="stat-l">active sites detected by eduNEXT</span><a href="https://www.youtube.com/watch?v=6f2JGU1rbx0&t=375s">▶ Talk 27 · 6:15</a></div>
+    <div class="stat"><span class="stat-n">+51</span><span class="stat-l">real net change in sites, year on year</span><a href="https://www.youtube.com/watch?v=6f2JGU1rbx0&t=562s">▶ Talk 27 · 9:22</a></div>
+    <div class="stat"><span class="stat-n">68%</span><span class="stat-l">of tracked sites didn't upgrade at all in a year — 795 sites, biggest clusters Nutmeg (139) and Juniper/Koa (102)</span><a href="https://www.youtube.com/watch?v=eo2f1kBmnTs&t=208s">▶ Talk 44 · 3:28</a></div>
+    <div class="stat"><span class="stat-n">$42M</span><span class="stat-l">cost to rebuild Open edX from scratch</span><a href="https://www.youtube.com/watch?v=BXAbUK2Mb6c&t=1613s">▶ Talk 02 · 26:53</a></div>
+  </div>
+
+  <!-- FIVE SHIFTS -->
+  <section class="group" id="shifts">
+    <div class="group-head"><h2>The five shifts</h2></div>
+
+    <h3>1 · The platform is being rebuilt around skills, not courses</h3>
+    <p>
+      The structural story of the week, and bigger than the AI story. Axim named it as the
+      growth bet, with two funded initiatives for the next 12–18 months: <b>Learning Pathways</b>
+      and <b>competency tracking</b>. Both require breaking the platform's founding assumption —
+      as OpenCraft put it, <i>"the core platform is built around one assumption, that a course is
+      the biggest unit of learning."</i> Pathways is being built on the new Open edX core,
+      deliberately not on the legacy platform.
+      <a class="src" href="https://www.youtube.com/watch?v=sovUFqdn1kw&amp;t=154s">Talk 07</a>
+    </p>
+
+    <h3>2 · Everyone is talking about AI; almost nobody has evidence yet</h3>
+    <p>
+      Roughly a third of the talks touched AI, but only <b>two</b> presented real numbers from
+      real learners. The most careful of those — a 20,000-learner randomised test of AI-presented
+      video — found <b>no measurable difference at all</b>. The other, WGU's embedded AI practice
+      activities, found a genuine improvement but on a narrow slice of courses. Everything else
+      was architecture, prototypes and intent.
+    </p>
+
+    <h3>3 · Assessment is the acknowledged crisis</h3>
+    <p>
+      WGU's position: standardized assessments are
+      <a class="fact" href="https://www.youtube.com/watch?v=A0Uvti7ytpM&t=187s">"increasingly easily gamed by AI"</a>,
+      and you cannot bolt AI onto the old model. Four separate talks converged on the same
+      conclusion — stop measuring recall in a snapshot, start gathering evidence continuously.
+    </p>
+
+    <h3>4 · Government is the fastest-growing vertical, arriving at national scale</h3>
+    <p>
+      Ethiopia (50 universities), Portugal (1.5M K-12 users), India (13M registrations),
+      Israel (1.2M), Uruguay (~1 in 14 citizens). Government is 17% of detected sites and,
+      combined with nonprofits, would be the largest single segment.
+    </p>
+
+    <h3>5 · Growth has flattened — and the community finally has data honest enough to say so</h3>
+    <p>The most under-discussed finding of the week, and the subject of the next section.</p>
+  </section>
+
+  <!-- STATE -->
+  <section class="group" id="state">
+    <div class="group-head"><h2>State of the platform</h2><span class="count">two numbers, opposite directions</span></div>
+    <p class="lede">
+      Axim reported growth. eduNEXT reported contraction. Both are correct — they measure
+      different things, and reconciling them is the single most useful thing in the data.
+    </p>
+
+    <div class="figure">
+      <p class="fig-title">Why the site count fell without adoption falling</p>
+      <p class="fig-sub">
+        The 2026 footprint is smaller than 2025's, but three-quarters of the drop is
+        methodology cleanup rather than churn. Stripping that out leaves a near-flat ecosystem.
+      </p>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--series-neutral)"></i> Measured total</span>
+        <span><i class="swatch" style="background:var(--series-2)"></i> Sites removed</span>
+        <span><i class="swatch" style="background:var(--series-1)"></i> Sites added</span>
+      </div>
+      <div class="bars">
+        <div class="bar-row total"><span class="bar-lab">2025 reported</span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:100%;background:var(--series-neutral)" title="Previous year's published figure"></div></div>
+          <span class="bar-val">2,250</span></div>
+        <div class="bar-row"><span class="bar-lab">Better filtering</span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:19.7%;background:var(--series-2)" title="Removed by improved data filtering — not real exits"></div></div>
+          <span class="bar-val">−444</span></div>
+        <div class="bar-row"><span class="bar-lab">Tenant &amp; naming</span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:8.0%;background:var(--series-2)" title="Duplicate tenants and renamed sites"></div></div>
+          <span class="bar-val">−181</span></div>
+        <div class="bar-row"><span class="bar-lab">Test / staging sites</span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:5.4%;background:var(--series-2)" title="Previously counted demo and staging instances"></div></div>
+          <span class="bar-val">−121</span></div>
+        <div class="bar-row"><span class="bar-lab">Real exits</span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:11.3%;background:var(--series-2)" title="Initiatives that genuinely stopped using Open edX"></div></div>
+          <span class="bar-val">−255</span></div>
+        <div class="bar-row"><span class="bar-lab">New deployments</span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:13.6%;background:var(--series-1)" title="Newly identified sites, incl. 115 apparent new deployments"></div></div>
+          <span class="bar-val">+306</span></div>
+        <div class="bar-row total"><span class="bar-lab">2026 measured</span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:68.3%;background:var(--series-neutral)" title="Smaller footprint, but a more accurate one"></div></div>
+          <span class="bar-val">1,537</span></div>
+      </div>
+      <p class="fig-sub" style="margin:var(--sp-4) 0 0">
+        <b>Net of methodology: +51.</b> eduNEXT's own conclusion — <i>"the likely real adoption
+        change year to year is close to flat."</i>
+        <a class="src" href="https://www.youtube.com/watch?v=6f2JGU1rbx0&t=562s">Talk 27 · 9:22</a>
+      </p>
+      <details class="datatable"><summary>Data table</summary>
+        <div class="tblwrap"><table>
+          <thead><tr><th>Component</th><th>Sites</th><th>Type</th></tr></thead>
+          <tbody>
+            <tr><td>2025 reported total</td><td class="num">2,250</td><td>Baseline</td></tr>
+            <tr><td>Improved data filtering</td><td class="num">−444</td><td>Methodology</td></tr>
+            <tr><td>Tenant &amp; naming changes</td><td class="num">−181</td><td>Methodology</td></tr>
+            <tr><td>Reclassified test sites</td><td class="num">−121</td><td>Methodology</td></tr>
+            <tr><td>Apparent real exits</td><td class="num">−255</td><td>Churn</td></tr>
+            <tr><td>Additions identified</td><td class="num">+306</td><td>Growth</td></tr>
+            <tr><td>2026 measured total</td><td class="num">1,537</td><td>Result</td></tr>
+          </tbody>
+        </table></div>
+      </details>
+    </div>
+
+    <div class="figure">
+      <p class="fig-title">Who is actually running Open edX</p>
+      <p class="fig-sub">
+        Higher education and corporate together account for roughly half the detected footprint.
+        Government is the fastest-growing segment and now sits at 17%.
+      </p>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-lab">Higher education</span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:100%;background:var(--series-1)" title="444 sites — the platform's founding market"></div></div>
+          <span class="bar-val">444</span></div>
+        <div class="bar-row"><span class="bar-lab">Corporate</span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:74.8%;background:var(--series-1)" title="332 sites — compliance, onboarding, customer education"></div></div>
+          <span class="bar-val">332</span></div>
+        <div class="bar-row"><span class="bar-lab">Government <span style="color:var(--muted-2)">(17%)</span></span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:58.8%;background:var(--series-1)" title="~261 sites — fastest-growing vertical"></div></div>
+          <span class="bar-val">~261</span></div>
+        <div class="bar-row"><span class="bar-lab">Academy, nonprofit, K-12 &amp; other</span>
+          <div class="bar-track"><div class="bar-fill" style="left:0;width:112.6%;background:var(--series-neutral)" title="Remainder — online academies are the largest component"></div></div>
+          <span class="bar-val">~500</span></div>
+      </div>
+      <p class="fig-sub" style="margin:var(--sp-4) 0 0">
+        Higher ed and corporate counts were stated directly; government was given as a
+        percentage and the remainder is derived. <a class="src" href="https://www.youtube.com/watch?v=6f2JGU1rbx0&amp;t=718s">Talk 27</a>
+      </p>
+    </div>
+
+    <h3>The rest of the footprint picture</h3>
+    <ul>
+      <li><b>Course volume grew ~50%</b> — roughly 40,000 advertised courses in 2024 to ~68,000 in 2025, led by higher ed and government.</li>
+      <li><b>The ecosystem is concentrating.</b> 25 large multi-tenant instances account for 35% of the footprint and 50% of all courses.</li>
+      <li><b>~60% of sites didn't upgrade at all last year.</b> Teak is now the main migration target; the long-standing Nutmeg bottleneck finally cleared.</li>
+      <li><b>Geography:</b> Western Europe and North America ≈ 50% of sites; Middle East (250) and East Asia (179) another 30%.</li>
+    </ul>
+    <p>
+      Axim's 145M learner figure is scraped from public data on roughly the 20 largest instances,
+      and they're candid it's a floor. The voluntary telemetry registry has run two years, but
+      ~80% of instances are on versions too old to include it.
+    </p>
+  </section>
+
+  <!-- SHIPPED -->
+  <section class="group" id="shipped">
+    <div class="group-head"><h2>What you can use today vs. what's still only a plan</h2></div>
+    <div class="maintable">
+      <table>
+        <thead><tr><th>Thing</th><th>Status</th><th>Detail</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td><b>Content Libraries</b></td><td><span class="pill p-ship">Shipped</span></td><td>Out of beta in Verawood after 18 months. Sections/subsections, version history, bulk publish, overrides, legacy migration.</td><td><a class="src" href="https://www.youtube.com/watch?v=Xfvb4BADnxY&t=34s">18</a></td></tr>
+          <tr><td><b>Instructor Dashboard MFE</b></td><td><span class="pill p-ship">Shipped</span></td><td>Live in Verawood. React/TypeScript, Paragon, first repo built on <code>frontend-base</code>.</td><td><a class="src" href="https://www.youtube.com/watch?v=IU960QXkKHQ&amp;t=225s">08</a></td></tr>
+          <tr><td><b>In-context analytics</b></td><td><span class="pill p-ship">Shipped</span></td><td>Landed in Teak, off by default. Part of Aspects.</td><td><a class="src" href="https://www.youtube.com/watch?v=Mw8m_uWoAH4&amp;t=156s">15</a></td></tr>
+          <tr><td><b>Design tokens (Paragon 33)</b></td><td><span class="pill p-ship">Shipped</span></td><td>Runtime theming — enables multi-tenant branding as config, not code.</td><td><a class="src" href="https://www.youtube.com/watch?v=HfBn45zWzSg&amp;t=87s">40</a></td></tr>
+          <tr><td><b>RBAC / roles &amp; permissions</b></td><td><span class="pill p-part">Partial</span></td><td>Phase 1 (libraries) in Ulmo; phase 2 (course authoring) in Verawood behind a flag. Built on Casbin.</td><td><a class="src" href="https://www.youtube.com/watch?v=yq8McFseOJA&amp;t=366s">51</a></td></tr>
+          <tr><td><b>AI Extensions framework</b></td><td><span class="pill p-part">Partial</span></td><td>Code exists and is model-agnostic — but untested at scale, no quota management, unknown cost.</td><td><a class="src" href="https://www.youtube.com/watch?v=OeW4I1uA_mw&amp;t=1138s">14</a></td></tr>
+          <tr><td><b>Learning Pathways</b></td><td><span class="pill p-none">Wireframes</span></td><td>MVP targeted for Willow, Dec 2026. Completion rules in CEL.</td><td><a class="src" href="https://www.youtube.com/watch?v=sovUFqdn1kw&amp;t=1355s">07</a></td></tr>
+          <tr><td><b>Competency / mastery tracking</b></td><td><span class="pill p-none">Prototype</span></td><td>Design plus published ADRs. The platform tracks zero competency mastery today.</td><td><a class="src" href="https://www.youtube.com/watch?v=Osof_u4izL0&amp;t=793s">12</a></td></tr>
+          <tr><td><b>Platform-wide rubrics</b></td><td><span class="pill p-none">PRD only</span></td><td>Rubrics exist solely inside ORA.</td><td><a class="src" href="https://www.youtube.com/watch?v=Osof_u4izL0&amp;t=1154s">12</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>The gaps that kept coming up</h3>
+    <p class="lede">
+      Six things the platform structurally lacks. These made the list because they surfaced
+      independently across different talks — they're not one person's wishlist.
+    </p>
+    <div class="gaps">
+      <details>
+        <summary><b>No blueprint courses</b> <span>— you can't run many copies of one course from a single master</span></summary>
+        <div class="gap-body">
+          <p>
+            A blueprint is a master course you stamp copies from, where the copies stay
+            <i>linked</i>: change the master and the change flows down to all of them. Open edX
+            has no version of this.
+          </p>
+          <p>
+            <b>How people cope:</b> ASU rebuilt it as Salesforce automation. They run 10–30
+            iterations of a single course per session, 80–1,500 students each, and said on stage
+            they're <i>"really looking forward to when Open edX has a true blueprint."</i> It's also
+            blocking a decision — they want to split Ethiopia's courses per university but won't,
+            because <i>"updating 50 versions of the courses was not on our lean team model."</i>
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary><b>No approval workflow for creating courses</b> <span>— nothing tracks who requested a course or who signed off</span></summary>
+        <div class="gap-body">
+          <p>
+            Who can request a course, who approves it, what state it's in (in development → beta
+            → live), and who gets which role at each stage. Open edX has none of this. It's
+            excellent at <i>delivering</i> a course and has nothing for the process that produces one.
+          </p>
+          <p>
+            <b>How people cope:</b> also Salesforce. ASU built a four-stage pipeline with rules
+            baked in — an instructor can't get a course shell until they've passed the teaching
+            course. With 50 universities and 35,000 professors, by hand isn't an option.
+            <i>"edX is great at delivering the course. But that intake and that approval process,
+            not sure where that is."</i>
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary><b>You can't push a library update out to many courses</b> <span>— each course has to accept the change itself</span></summary>
+        <div class="gap-body">
+          <p>
+            Shared content libraries only work in one direction: <b>pull</b>. Edit a component in
+            the library and every course using it must individually accept the update. You can't
+            push one fix out to the 20 courses that need it.
+          </p>
+          <p>
+            <b>How people cope:</b> they don't. Asked directly at the libraries talk — <i>"is there
+            a way to push it out from the library so you don't have to go to say 20 courses?"</i> —
+            the answer was <i>"not not yet."</i> There's a real reason, not just missing work:
+            someone publishing a change meant for one course could shove it into a course they
+            don't even have permission to see.
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary><b>Only quiz-type components can be graded</b> <span>— a decade-old complaint</span></summary>
+        <div class="gap-body">
+          <p>
+            The only thing the platform can put a score on is an XBlock — the plugin format every
+            quiz, video and problem is built as. So a discussion, a peer review, or work done
+            outside the platform can't be graded unless you wrap it in one.
+          </p>
+          <p>
+            <b>How people cope:</b> they wrap it in an XBlock.
+            <i>"We have been asked time and time again for the past over a decade now — can we
+            grade discussions? And eventually it all ends up being 'oh well, yeah, I guess you can
+            make an XBlock that holds that.'"</i> The cause is a design decision: XBlock bundled
+            scoring, display and storage together, so grading got permanently tied to it.
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary><b>No built-in way to sell courses</b> <span>— the payments feature was removed, not never built</span></summary>
+        <div class="gap-body">
+          <p>
+            Open edX <i>used to</i> ship an e-commerce service. It was pulled after the shopping-cart
+            library it was built on dropped support for MySQL, the database Open edX runs on. Taking
+            payments is now entirely a third-party job.
+          </p>
+          <p>
+            <b>How people cope:</b> a WooCommerce plugin maintained by the community. Ethiopia built
+            its local payment gateways on top of it, since PayPal doesn't operate there. Zite Labs
+            is reportedly building a managed replacement.
+          </p>
+        </div>
+      </details>
+      <details>
+        <summary><b>No official accessibility report</b> <span>— nothing to hand a procurement team that asks</span></summary>
+        <div class="gap-body">
+          <p>
+            A VPAT is the standard document a vendor produces stating how its product measures up
+            against accessibility rules. Procurement committees and regulators ask for it by name.
+            Open edX doesn't have one.
+          </p>
+          <p>
+            <b>How people cope:</b> eduNEXT went looking, found nothing, and wrote an unofficial
+            draft themselves against the WCAG 2.2 standard. This is getting urgent — the European
+            Accessibility Act now wants proof, and good intentions are explicitly not a legal
+            defence: <i>"they are starting to ask you for evidence."</i>
+          </p>
+        </div>
+      </details>
+    </div>
+    <p>
+      <b>Notice Salesforce appears twice.</b> That's the tell — customers are rebuilding core
+      platform functions in a sales CRM because the platform doesn't offer them. Blueprints and the
+      approval workflow are the two that fast-growing clients hit first.
+    </p>
+    <p><b>Releases:</b> Ulmo (Dec 2025) → <b>Verawood (June 2026)</b> → Willow (Dec 2026). An LTS on a two-year cadence is under discussion.</p>
+  </section>
+
+  <!-- AI -->
+  <section class="group" id="ai">
+    <div class="group-head"><h2>AI: separating real from narrated</h2></div>
+    <p>
+      Axim's official position is deliberately restrained. The argument for the LMS in an AI
+      world is accountability — without the harness,
+      <i>"is there any learning actually happening? Or was it all a series of hallucinations
+      that made the person feel good about what they already know?"</i>
+      <a class="src" href="https://www.youtube.com/watch?v=JYUU_S2y_m0&amp;t=970s">Talk 05</a>
+    </p>
+
+    <div class="figure">
+      <p class="fig-title">Human presenter vs. AI avatar: no measurable difference</p>
+      <div class="fig-split">
+        <div>
+          <p class="fig-sub">
+            <b>2U/edX</b> ran a randomised A/B test in the "How to Learn Online" course. ~20,000
+            learners split evenly. Every learner got a 2-minute summary video at the end of each of
+            four modules — <b>identical script</b>, but one group saw a human presenter and the
+            other saw an AI avatar. This is what researchers call a <i>null result</i>: the thing
+            being tested made no difference to the outcomes measured. Not a failed experiment — a
+            finding.
+          </p>
+          <p class="fig-sub">
+            <b>But "no difference" is not the same as "nobody cared."</b> Most free-text comments
+            were neutral, yet a small and vocal group hated it: <i>"This is AI slop." "This is so
+            unsettling." "Stop taking away jobs from humans."</i> That's a reputational signal that
+            will never show up in a completion metric.
+          </p>
+          <p class="fig-sub">
+            The team's own conclusion was explicitly <b>not</b> "ship avatars." Two reasons: this
+            was <i>supplementary</i> content — a throwaway two-minute recap, not core teaching —
+            and they haven't yet tested it on hard material like worked problems or emotionally
+            loaded topics. What they recommend is running more experiments, and they published the
+            method so you can.
+            <a class="src" href="https://www.youtube.com/watch?v=5DAfrQST6x0&t=993s">Talk 57 · 16:33</a>
+          </p>
+        </div>
+        <div class="stats">
+          <div class="stat"><span class="stat-n">96%</span><span class="stat-l">liked the human video</span></div>
+          <div class="stat"><span class="stat-n">93%</span><span class="stat-l">liked the AI avatar</span></div>
+          <div class="stat"><span class="stat-n">no change</span><span class="stat-l">in how confident learners felt afterwards</span></div>
+          <div class="stat"><span class="stat-n">no change</span><span class="stat-l">in whether they finished the video or the course</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3>The best production evidence</h3>
+    <p>
+      WGU's in-flow AI — a guardrailed prompt embedded in the learning activity, not a general
+      chatbot. Live in <a class="fact" href="https://www.youtube.com/watch?v=wjgGCuhZBZ4&t=154s">84 courses of ~1,200</a>,
+      ~17,000 learners. Because the programme is competency-based, using the material is
+      <i>optional</i> — and 80–100% opted in. First-attempt pass rate improved
+      <a class="fact" href="https://www.youtube.com/watch?v=wjgGCuhZBZ4&t=554s">18%</a> on a
+      gen-ed course with ~20k enrolment. Their own caveat is the useful one:
+      <i>"It's not AI plopped into a course. It's how you plop it in."</i>
+    </p>
+
+    <h3>The honest limits, from the person who built the framework</h3>
+    <blockquote>
+      "We have no idea how much this costs. If you have 1,000 users, how much is my token count
+      going to run? The first one who gets 1,000 users here can tell me."
+    </blockquote>
+    <p>
+      Felipe Montoya on AI Extensions — performance at scale untested, no token or quota
+      management, real provider inconsistencies around tool-calling. His ask was blunt:
+      <i>"The largest pilot so far was yesterday at the tutorials."</i>
+      <a class="src" href="https://www.youtube.com/watch?v=OeW4I1uA_mw&amp;t=1429s">Talk 14</a>
+    </p>
+
+    <h3>Where AI is doing genuinely novel work</h3>
+    <ul>
+      <li><b>Synthetic students</b> — decomposing a learner into ~7 small models rather than one LLM roleplaying. <i>"A generalist model pretending to be four specialists is not four specialists."</i> The structure agent caught an ontology bug: module 2 asks students to read vitamin labels; module 3 teaches what vitamins are. <a class="src" href="https://www.youtube.com/watch?v=BjHOgxBTIUo&t=86s">Talk 53</a></li>
+      <li><b>Continuous assessment</b> — cognitive task analysis → domain model → learner cognition model → just-in-time activities and rubrics, with automated cut scores. Deliberately offloads to small models and plain Python for predictability. <a class="src" href="https://www.youtube.com/watch?v=A0Uvti7ytpM&amp;t=398s">Talk 58</a></li>
+      <li><b>Agentic course production</b> — Santander's ~100 small agents turning market signals into courses and clips. On cost: <i>"I don't think we should put costs before exploration."</i> <a class="src" href="https://www.youtube.com/watch?v=jBDPOHY9gwc&amp;t=1782s">Talk 21</a></li>
+      <li><b>AI grading is harder than it looks</b> — sycophancy is structural: when uncertain, the model completes toward the most likely token, and the most likely answer is the <i>correct</i> one, so it silently upgrades wrong student answers. <a class="src" href="https://www.youtube.com/watch?v=wMZENuRzMc0&amp;t=315s">Talk 35</a></li>
+    </ul>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="group" id="skills">
+    <div class="group-head"><h2>Skills &amp; credentials</h2></div>
+    <p>
+      Unicon interviewed 10 institutions running CBE on Canvas, Brightspace and Blackboard.
+      The verbatim from Calbright is the thesis statement:
+    </p>
+    <blockquote>"There's no clean system. Institutions are just MacGyvering things together."
+      <a class="src" href="https://www.youtube.com/watch?v=Osof_u4izL0&t=433s">Talk 12 · 7:13</a></blockquote>
+    <p>
+      Every institution named the same #1 gap — progress tracking, done in manual spreadsheets.
+      Skills get tagged but can't drive what happens next. CBE roles (coach, mentor, advisor)
+      don't exist in any LMS role model.
+    </p>
+    <p>
+      The credentials stack has stabilized: <a href="https://www.w3.org/TR/vc-data-model-2.0/">W3C Verifiable Credentials</a>
+      → <a href="https://www.imsglobal.org/spec/ob/v3p0/cert">Open Badges 3.0</a>. Good metaphor
+      from DCC: <i>"if a verifiable credential is a car, an Open Badge is a school bus."</i>
+      Blockchain was quietly dropped — it was the wrong layer.
+    </p>
+    <p>
+      <b>But the employer loop is not closed, and they said so.</b> Employers are interested but
+      <i>"have no way to really consume verifiable credentials"</i> — ATS and HRIS vendors haven't
+      adopted the schemas. The reframe offered: the near-term value of learning records is learner
+      confidence and visibility, not employer verification.
+      <a class="src" href="https://www.youtube.com/watch?v=R6D0isZd7O4&amp;t=1018s">Talk 10</a>
+    </p>
+    <p>
+      <b>The one hard outcome number</b> surfaced in a hallway an hour before the talk: veterans
+      holding Education Design Lab durable-skills credentials
+      <a class="fact" href="https://www.youtube.com/watch?v=i8o2gxOqxNY&t=650s">entered jobs earning $10,000 more</a>
+      on average than their same-cohort peers. The usual gender gap inverted — women gained
+      substantially more.
+    </p>
+  </section>
+
+  <!-- SCALE -->
+  <section class="group" id="scale">
+    <div class="group-head"><h2>National &amp; enterprise scale</h2></div>
+    <div class="maintable">
+      <table>
+        <thead><tr><th>Programme</th><th>Scale</th><th>What's notable</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td><b>Ethiopia — Eshi</b></td><td class="num">~440k learners<br>50 universities</td><td>Federated: each university its own instance, ministry manages the platform centrally and sets a national interoperability standard. Proved resilient through conflict and a Marburg outbreak.</td><td><a class="src" href="https://www.youtube.com/watch?v=yzCWDKmKqyc&t=426s">23</a></td></tr>
+          <tr><td><b>Portugal — EduQA</b></td><td class="num">1.5M users<br>120k teachers</td><td>PII on-prem, rest on EU Azure. Auth via national ID. Everything glued with xAPI into one LRS. 3,000 content streams generated in 3 months, fact-checked by a 100-professor panel.</td><td><a class="src" href="https://www.youtube.com/watch?v=xQ0-MdGOqtk&amp;t=30s">31</a></td></tr>
+          <tr><td><b>India — Skill India</b></td><td class="num">13M registrations</td><td>2,700+ courses across 27 industries. Job matching, apprenticeships and digital CVs in one ecosystem.</td><td><a class="src" href="https://www.youtube.com/watch?v=Qa6mf6o1hk8&amp;t=1417s">29</a></td></tr>
+          <tr><td><b>Israel — Campus IL</b></td><td class="num">1.2M learners<br>2M events/day</td><td>Hardened Aspects for national scale; 30,000+ CCX classrooms.</td><td><a class="src" href="https://www.youtube.com/watch?v=Qa6mf6o1hk8&amp;t=621s">29</a></td></tr>
+          <tr><td><b>Uruguay</b></td><td class="num">~250k reached<br>≈1 in 14 citizens</td><td>Three <i>unconnected</i> institutions converging independently — not a national plan.</td><td><a class="src" href="https://www.youtube.com/watch?v=PnkFkj8O4UA&amp;t=1256s">34</a></td></tr>
+          <tr><td><b>Santander</b></td><td class="num">~17M users</td><td>Migrating ~80 courses this year; building an agentic "learning factory".</td><td><a class="src" href="https://www.youtube.com/watch?v=jBDPOHY9gwc&amp;t=1632s">21</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>What these programmes cost, and who won them</h3>
+    <p class="lede">
+      None of this was stated on stage — the talks describe scale, never money. These figures
+      come from public funding records, and the confidence varies a lot by country.
+    </p>
+    <div class="maintable">
+      <table>
+        <thead><tr><th>Programme</th><th>Value</th><th>Who holds it</th><th>Confidence</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>Ethiopia — e-SHE</b></td>
+            <td class="num"><b>$16.8M</b><br><span style="color:var(--muted-2)">5-year grant</span></td>
+            <td>Mastercard Foundation grant to the Ministry of Education. Delivered with <b>ASU EdPlus</b>, <b>Shayashone PLC</b> and the 50 public universities; OpenCraft on the platform.</td>
+            <td><span class="pill p-ship">Confirmed</span><br><a class="src" style="margin-top:.3rem;display:inline-block" href="https://mastercardfdn.org/en/what-we-do/our-programs/e-learning-for-strengthening-higher-eduction-e-she/">Funder</a></td>
+          </tr>
+          <tr>
+            <td><b>Portugal — digital transition in education</b><br><span style="color:var(--muted-2);font-size:.8rem">PRR line C20-i01.03</span></td>
+            <td class="num"><b>€29.7M</b><br><span style="color:var(--muted-2)">€33.28M paid<br>2021–2026</span></td>
+            <td>Beneficiary is <b>EduQA, I.P.</b> — which is the government <i>institute</i>, not the platform. Suppliers named on the programme include <b>NTT DATA Portugal + Kautak Learning</b>, <b>Altice Labs</b> and <b>Deloitte Technology</b>.</td>
+            <td><span class="pill p-part">Programme-level</span><br><a class="src" style="margin-top:.3rem;display:inline-block" href="https://transparencia.gov.pt/pt/fundos-europeus/prr/beneficiarios-projetos/projeto/C20-i01.03/">PRR portal</a></td>
+          </tr>
+          <tr>
+            <td><b>India — Skill India Digital Hub</b></td>
+            <td class="num">not disclosed<br><span style="color:var(--muted-2)">SANKALP total:<br>$250M / ₹1,650cr</span></td>
+            <td>Owned by <b>MSDE</b>, operated by <b>NSDC</b>. Development funded under the World Bank–supported <b>SANKALP</b> scheme; maintenance via the Skill India Programme. No vendor named publicly.</td>
+            <td><span class="pill p-none">Unresolved</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <b>Read the Portugal number carefully.</b> €29.7M is the whole PRR investment line, whose
+      own objective text also covers unrelated items such as fitness-monitoring tools for PE
+      classes. The learning platform is a sub-project inside that envelope, not its price tag.
+      Two further notes: <b>EduQA is an institute</b> created by Decree-Law 105/2025, not a
+      product — the conference talk presented it as the platform. And <b>Skilup, who gave the
+      talk, appears in the award records as Kautak Learning LDA</b>, its Portuguese entity — a
+      corporate link the award listing itself does not show, confirmed by the presenter after
+      publication. The record pairs Kautak Learning with NTT DATA Portugal, so it establishes
+      participation in the supplier consortium, not prime status. There is also active Portuguese reporting on ~€7.1M of separate
+      exam-digitalisation contracts that failed; that appears to be a different system under the
+      same ministry, and shouldn't be conflated with this one.
+    </p>
+    <p>
+      The pattern is worth noting on its own: <b>the philanthropic programme publishes its
+      number; neither government one does.</b> Portugal is traceable because EU recovery funds
+      carry a transparency obligation. India's is only reachable by RTI.
+    </p>
+
+    <p>
+      <b>Operations at that scale is its own discipline.</b> Eshi has 3M+ enrolments across
+      12 open-enrolment courses and a 74% completion rate. One week produced 149,000 signups
+      and thousands of Monday-morning quiz resets. The fix wasn't engineering — it was
+      collapsing to one final exam per course, an intake form, and bulk processing.
+      <i>"We didn't scale our team, we scaled our system."</i>
+      <a class="src" href="https://www.youtube.com/watch?v=TMlx_ELJ2_A&amp;t=792s">Talk 63</a>
+    </p>
+  </section>
+
+  <!-- TENSIONS -->
+  <section class="group" id="tensions">
+    <div class="group-head"><h2>The arguments the community is having</h2></div>
+
+    <h3>Flexibility is an asset in higher ed and a liability in corporate training</h3>
+    <p>
+      From hundreds of sales meetings: professional-training buyers <i>like</i> Open edX, get
+      excited, then stall — never on capability. The recurring phrase was <b>"powerful but risky."</b>
+      Discovery, which higher ed reads as diligence, reads to them as unbounded scope. Same
+      product, different framing: "highly customizable open-source LMS" loses; "enterprise
+      learning platform with open-source flexibility" wins. And this market is larger and
+      growing faster than higher ed. <a class="src" href="https://www.youtube.com/watch?v=rlvFtnABSj8&amp;t=1100s">Talk 32</a>
+    </p>
+
+    <h3>Contribute vs. fork, with receipts</h3>
+    <p>
+      Contributors get <a class="fact" href="https://www.youtube.com/watch?v=BXAbUK2Mb6c&t=980s">2× the productivity benefit</a>
+      of free riders; a private fork costs the average company
+      <a class="fact" href="https://www.youtube.com/watch?v=BXAbUK2Mb6c&t=1311s">~5,000 hours <i>per release cycle</i>, roughly $250k</a>.
+      Read that one carefully: it comes from a 560-respondent Linux Foundation survey across
+      open source <i>generally</i>, not Open edX — and it is per release cycle, not per year.
+      Open edX ships twice a year, and the figure scales with company size and fork count.
+      OpenCraft's cautionary tales: McKinsey Academy died at 6–9 months of reconciliation work
+      per release; FUN, France's first government instance, has been frozen for ~10 years. But
+      they concede that for every quote they made, two or three providers quoted a tenth of the price.
+    </p>
+
+    <h3>Upgrade debt is the biggest silent liability</h3>
+    <p>
+      68% of tracked sites — <b>795 of them</b> — didn't move a single release in a year. That's
+      the diagonal of a year-on-year migration matrix, not one shared version: the biggest
+      clusters are <b>Nutmeg (139 sites)</b> and <b>Juniper/Koa (102)</b>, with some Hawthorn
+      instances six or seven years old still in production. Those stranded sites hold roughly
+      <b>half</b> of all course content, and 90% are still operational. For contrast, 236 sites
+      moved Lilac → Redwood and 162 moved Redwood → Teak. The real forcing function is that security patches only ship
+      for the latest release. Advice: upgrade once a year, skipping one release; "latest stable"
+      means a few months after release, not release week.
+      <a class="src" href="https://www.youtube.com/watch?v=eo2f1kBmnTs&amp;t=847s">Talk 44</a>
+    </p>
+
+    <h3>Accessibility: intent is no longer a defense</h3>
+    <p>
+      The European Accessibility Act wants VPATs and evidence, not diversity statements.
+      <b>There is no official Open edX VPAT</b> — eduNEXT published an unofficial first draft.
+      The live screen-reader demo found real bugs: first heading is <code>h3</code> not
+      <code>h1</code>; a graph whose alt text reads "graphic"; drag-and-drop that throws focus
+      to the top of the page — brutal in a timed exam; and in Studio, edit fields announced as
+      buttons with no confirmation that Save worked.
+      <a class="src" href="https://www.youtube.com/watch?v=UFGlTOoTbfs&amp;t=414s">Talk 30</a>
+    </p>
+  </section>
+
+  <!-- WATCH -->
+  <section class="group" id="watch">
+    <div class="group-head"><h2>The most interesting talks — if you have the time, watch these</h2><span class="count">ranked</span></div>
+    <ol class="ranked">
+      <li><div><b><a href="https://www.youtube.com/watch?v=BjHOgxBTIUo">Synthetic Students at Scale</a></b> — the most original idea of the conference; the failing-sentence examples will change how you review content.</div></li>
+      <li><div><b><a href="https://www.youtube.com/watch?v=5DAfrQST6x0">Using Content Experiments</a></b> — the only randomized AI data anyone presented, plus a method you could run next week.</div></li>
+      <li><div><b><a href="https://www.youtube.com/watch?v=6f2JGU1rbx0">Global Footprint Report</a></b> + <b><a href="https://www.youtube.com/watch?v=JYUU_S2y_m0">State of Open edX</a></b> — read together, the honest picture of ecosystem health.</div></li>
+      <li><div><b><a href="https://www.youtube.com/watch?v=rlvFtnABSj8">The Professional Training Opportunity</a></b> — the most commercially useful talk; explains why deals die.</div></li>
+      <li><div><b><a href="https://www.youtube.com/watch?v=Z6T3osYbdUk">How to Build Plugin-Friendly Django Apps</a></b> — architecture wisdom that generalizes far beyond Open edX. <i>"Ugly is not unmaintainable."</i></div></li>
+      <li><div><b><a href="https://www.youtube.com/watch?v=BXAbUK2Mb6c">Collaborate on the Core, Compete on the Edges</a></b> — the economic case for contributing, with a usable decision framework.</div></li>
+      <li><div><b><a href="https://www.youtube.com/watch?v=UFGlTOoTbfs">Open edX Through a Screenreader</a></b> — 20 minutes that will change what you ship.</div></li>
+      <li><div><b><a href="https://www.youtube.com/watch?v=yzCWDKmKqyc">One Platform, Three Models</a></b> — the best framework anywhere for "how much Open edX do you actually need."</div></li>
+      <li><div><b><a href="https://www.youtube.com/watch?v=A0Uvti7ytpM">Continuous Mastery</a></b> + <b><a href="https://www.youtube.com/watch?v=wjgGCuhZBZ4">Embedding AI in Courses</a></b> — WGU's theory, then WGU's shipped data.</div></li>
+      <li><div><b><a href="https://www.youtube.com/watch?v=TMlx_ELJ2_A">From Overwhelmed to Optimized</a></b> — unglamorous and the most immediately actionable talk of the week.</div></li>
+    </ol>
+  </section>
+
+  <!-- WHO -->
+  <section class="group" id="who">
+    <div class="group-head"><h2>Who's who</h2><span class="count">expand any card for a full profile</span></div>
+    <div class="who">
+      <div class="whoblock" style="--cat:var(--cat-steward)">
+        <h4>Axim Collaborative <span style="font-weight:400;color:var(--muted-2);font-size:.8rem">· steward</span></h4>
+        <p class="org-what">Nonprofit founded by Harvard and MIT with the edX sale proceeds. Doesn't run an LMS — sets the roadmap and funds the initiatives.</p>
+        <ul>
+          <li><b><a href="https://www.axim.org/news/ceo">Stephanie Khurana</a></b> — CEO</li>
+          <li><b>Jenna</b> — product; the connective figure across libraries, pathways and CBE</li>
+          <li><b>Fenil Patel</b> — the platform's AI position</li>
+          <li><b>Chelsea Rathburn</b> · <b>Sarah Burns</b> — in-context analytics, Aspects</li>
+          <li><b>Dave Ormsby</b> — plugin &amp; platform architecture</li>
+        </ul>
+        <details><summary>More on Axim</summary><div class="profile">
+          <dl class="facts">
+            <dt>Founded</dt><dd>2021, by Harvard and MIT</dd>
+            <dt>Funded by</dt><dd>The ~$800M proceeds of the edX sale to 2U</dd>
+            <dt>CEO</dt><dd>Stephanie Khurana (since April 2023)</dd>
+            <dt>Runs an LMS?</dt><dd>No — it stewards the platform</dd>
+          </dl>
+          <p>
+            When 2U bought edX in 2021, Harvard and MIT kept the <b>open-source code</b> and sold
+            only the brand, website and commercial assets. The sale proceeds funded Axim, and the
+            code became its responsibility. That's why your upstream is Axim and not 2U.
+          </p>
+          <p>
+            The critical thing to understand is the funding model: Axim lives on a <b>one-time
+            endowment</b>, not revenue from the platform. It has no product to sell you.
+          </p>
+          <div class="why"><b>Why it matters to you</b>
+            That endowment model explains the whole operating style — they fund initiatives rather
+            than ship features, the community does most of the building, and "contribute back" is
+            pitched as ecosystem survival rather than charity. Their two funded bets for the next
+            12–18 months are Learning Pathways and competency tracking, so those are the defaults
+            you'll inherit.
+          </div>
+        </div></details>
+      </div>
+      <div class="whoblock" style="--cat:var(--cat-vendor)">
+        <h4>OpenCraft <span style="font-weight:400;color:var(--muted-2);font-size:.8rem">· provider</span></h4>
+        <p class="org-what">Founded 2013. Largest contributor after edX and Axim. Self-managed, no middle managers, public handbook.</p>
+        <ul>
+          <li><b><a href="https://openedx.org/blog/spotlight-xavier-antoviaque-ceofounder-opencraft/">Xavier Antoviaque</a></b> — founder; first external contributor to Open edX</li>
+          <li><b><a href="https://discuss.openedx.org/t/core-contributor-nomination-cassie-zamparini/9778">Cassie Zamparini</a></b> · <b>Piotr Surowiec</b> — Learning Pathways</li>
+          <li><b>Fox</b> — migrations · <b>Jordan</b> — the professional-training analysis</li>
+          <li><b>Pooja</b> · <b>Shreyas Soupti</b> · <b>Alli Hugo</b></li>
+        </ul>
+        <details><summary>More on OpenCraft</summary><div class="profile">
+          <dl class="facts">
+            <dt>Founded</dt><dd>2013, weeks after Open edX was open-sourced</dd>
+            <dt>Size</dt><dd>14 core contributors — most after edX and Axim</dd>
+            <dt>Structure</dt><dd>Self-managed, no middle managers</dd>
+            <dt>Clients</dt><dd>Harvard, MIT, edX/2U, ASU, plus state projects in France and Israel</dd>
+          </dl>
+          <p>
+            The origin is a good story: founder <b>Xavier Antoviaque</b> was a freelance developer
+            who submitted the <b>first external contribution</b> ever merged into Open edX. Ned
+            Batchelder at edX then referred him to a team needing help — that became his first
+            client, and eventually the company. He calls it open-source karma.
+          </p>
+          <p>
+            They run on open-source principles internally: autonomous "cells" named after
+            spacecraft, a <b>fully public handbook</b> you're free to copy, and strategy discussed
+            on a public forum. No secret sauce, deliberately.
+          </p>
+          <div class="why"><b>Why it matters to you</b>
+            They're the most likely partner if you need something <i>upstreamed</i> rather than
+            forked — that's their explicit policy, and they've lost deals over it. They also drive
+            Learning Pathways. The honest counterweight: they concede that for every quote they
+            make, competitors quote a third or a tenth of the price.
+          </div>
+        </div></details>
+      </div>
+      <div class="whoblock" style="--cat:var(--cat-vendor)">
+        <h4>eduNEXT <span style="font-weight:400;color:var(--muted-2);font-size:.8rem">· provider</span></h4>
+        <p class="org-what">Founded 2013 in Bogotá by brothers Felipe and Juan Camilo Montoya. Publishes the Global Footprint Report.</p>
+        <ul>
+          <li><b><a href="https://co.linkedin.com/in/felipe-montoya-edunext">Felipe Montoya</a></b> — co-founder/CTO; AI Extensions</li>
+          <li><b>Juan Camilo Montoya</b> — footprint report, stranded-institutions analysis</li>
+          <li><b>Natalia Rodriguez Contar</b> — the four-stage modernization model</li>
+          <li><b>Laura</b> · <b>Christian</b> — accessibility, vibecoding, Uruguay</li>
+        </ul>
+        <details><summary>More on eduNEXT</summary><div class="profile">
+          <dl class="facts">
+            <dt>Founded</dt><dd>May 2013, Bogotá, Colombia</dd>
+            <dt>Founders</dt><dd>Brothers Felipe and Juan Camilo Montoya</dd>
+            <dt>Track record</dt><dd>~500 organizations served, ~100 upgrades performed</dd>
+            <dt>Known for</dt><dd>The Global Footprint Report and the AI Extensions framework</dd>
+          </dl>
+          <p>
+            One of the oldest professional Open edX providers, and unusual in how much of its work
+            is <b>public goods rather than client work</b>. The annual Global Footprint Report is
+            the ecosystem's only real census — it's the reason anyone can say how many Open edX
+            sites exist, which verticals are growing, and how badly the upgrade problem bites.
+          </p>
+          <p>
+            They also built <code>openedx-ai-extensions</code>, the model-agnostic AI framework now
+            hosted under the Open edX GitHub org rather than their own — deliberately, so it reads
+            as community infrastructure rather than a vendor play.
+          </p>
+          <div class="why"><b>Why it matters to you</b>
+            If you want to know whether the ecosystem is actually growing, or which release
+            everyone is stuck on, eduNEXT's data is the source — including the uncomfortable
+            findings, like adoption being close to flat and 68% of sites stranded on old versions.
+          </div>
+        </div></details>
+      </div>
+      <div class="whoblock" style="--cat:var(--cat-inst)">
+        <h4>Western Governors University <span style="font-weight:400;color:var(--muted-2);font-size:.8rem">· institution</span></h4>
+        <p class="org-what">Competency-based since 1997. ~200,000 students. First "mission-aligned organization", with 10 dedicated platform engineers.</p>
+        <ul>
+          <li><b><a href="https://www.linkedin.com/in/courtney-hills-mcbeth-34973b2/">Dr. Courtney Hills McBeth</a></b> — CAO &amp; Provost</li>
+          <li><b><a href="https://www.linkedin.com/in/iamtroydavis/">Troy Davis</a></b> — VP University Technology</li>
+          <li><b>Tommy Bishop</b> — continuous assessment · <b>Rob Clark</b> — synthetic students</li>
+          <li><b>Rodrigo Mendes</b> — RBAC · <b>Michael &amp; Leslie</b> — in-flow AI</li>
+        </ul>
+        <details><summary>More on WGU</summary><div class="profile">
+          <dl class="facts">
+            <dt>Founded</dt><dd>1997, by Governors Mike Leavitt (R-Utah) and Roy Romer (D-Colorado)</dd>
+            <dt>Model</dt><dd>Nonprofit, fully online, competency-based from day one</dd>
+            <dt>Size</dt><dd>~200,000 students · 80+ programmes · 500,000th degree awarded during the conference</dd>
+            <dt>Contribution</dt><dd>10 dedicated Open edX engineers</dd>
+          </dl>
+          <p>
+            The founding detail explains everything about them: Leavitt came from technology and
+            wanted to know what the internet could do for access; Romer came from <b>the Air Force,
+            where training is already competency-based</b>. They imported that model wholesale.
+            Students progress by demonstrating mastery, never by seat time.
+          </p>
+          <p>
+            Structurally unusual in two ways. First, a <b>specialized faculty model</b> — separate
+            people build curriculum, teach, and evaluate, and the evaluators grade against rubrics
+            <i>without ever seeing the student's name</i>. They assessed ~3 million performance
+            submissions last year. Second, every student gets a <b>dedicated mentor</b>; on the
+            student panel that mattered far more to people than any technology.
+          </p>
+          <p>
+            They hold themselves to three results — completion, <b>return</b> (income change within
+            two years), and equity. Gallup reports ~$15,000 average income lift within a year of
+            graduating, with 97% of employers saying graduates are prepared.
+          </p>
+          <div class="why"><b>Why it matters to you</b>
+            WGU is competency-based and Open edX is course-shaped. <b>That mismatch is the engine
+            behind the entire skills-not-courses rebuild.</b> Rather than work around it they put
+            engineers on moving it — instructor dashboard, RBAC, <code>frontend-base</code> — and
+            Axim's roadmap now follows that pressure. Their requirements are quietly setting your
+            future defaults.
+          </div>
+        </div></details>
+      </div>
+      <div class="whoblock" style="--cat:var(--cat-std)">
+        <h4>Standards &amp; skills <span style="font-weight:400;color:var(--muted-2);font-size:.8rem">· the long lineage</span></h4>
+        <p class="org-what">The layer the skills turn plugs into — it predates Open edX's involvement by a decade.</p>
+        <ul>
+          <li><b><a href="https://www.linkedin.com/in/kerrilemoie/">Dr. Kerri Lemoie</a></b> — Director, Digital Credentials Consortium; founding Open Badges contributor</li>
+          <li><b><a href="https://eddesignlab.org/bio/tara-laughlin-edd/">Dr. Tara Laughlin</a></b> — Education Design Lab; Open edX is their 4th platform</li>
+          <li><b>Mary</b> · <b>Kate</b> — Unicon, competency &amp; CBE research</li>
+        </ul>
+        <details><summary>More on these three</summary><div class="profile">
+          <p>
+            <b>Digital Credentials Consortium</b> — founded 2018, housed at MIT Open Learning.
+            16 higher-ed institutions across four continents. Built the <b>Learner Credential
+            Wallet</b> on a 2020 US Dept of Education grant, the first of its kind, since handed to
+            the OpenWallet Foundation. Ships open-source issuing microservices and a verifier.
+            Director <b>Kerri Lemoie</b> is a founding Open Badges contributor who led the
+            alignment with W3C Verifiable Credentials.
+          </p>
+          <p>
+            <b>Education Design Lab</b> — national nonprofit, 10+ years on durable skills. Nine
+            competencies with matching micro-credentials. <b>Open edX will be their fourth
+            platform</b> — the previous three couldn't deliver a competency model. Moving to
+            free/OER through an Axim-funded initiative. Their credentials produced the conference's
+            one hard outcome number: veterans holding them entered jobs earning $10,000 more.
+          </p>
+          <p>
+            <b>Unicon</b> — in ed-tech since 1993, has sustained roughly a dozen open-source
+            communities as both committers and commercial support. Formally partnered with Axim on
+            competency and skills-based education, with research alongside C-BEN. They did the
+            fieldwork behind the competency design — interviewing 10 institutions running CBE on
+            other platforms.
+          </p>
+          <div class="why"><b>Why it matters to you</b>
+            This is the layer the skills turn plugs into, and it has the longest history — the
+            credentials chain runs back through the 2019 US Dept of Education blockchain work to
+            Mozilla-era Open Badges. It also contains the honest bad news: employers still can't
+            consume verifiable credentials, because ATS and HRIS vendors haven't adopted the schemas.
+          </div>
+        </div></details>
+      </div>
+      <div class="whoblock" style="--cat:var(--cat-deploy)">
+        <h4>Research &amp; deployments <span style="font-weight:400;color:var(--muted-2);font-size:.8rem">· evidence and scale</span></h4>
+        <p class="org-what">The evidence base, and the programmes running at national scale.</p>
+        <ul>
+          <li><b><a href="https://www.linuxfoundation.org/press/linux-foundation-appoints-frank-nagle-as-advising-chief-economist">Frank Nagle</a></b> — HBS / Linux Foundation; the open-source economics research</li>
+          <li><b>Zelalem</b> — Ethiopian Ministry of Education</li>
+          <li><b><a href="https://openexpoeurope.com/en/speaker/javier-pozo-ugidos/">Javier Pozo</a></b> — CTO, Santander Universidades</li>
+          <li><b><a href="https://www.linkedin.com/in/lydiamlogan/">Lydia Logan</a></b> — VP, IBM SkillsBuild</li>
+        </ul>
+        <details><summary>More on these</summary><div class="profile">
+          <p>
+            <b>ASU / EdPlus</b> — Arizona State's digital arm, operating under a charter that
+            measures the university "not by whom we exclude but by whom we include." Runs three
+            Mastercard Foundation–funded Open edX deployments across Africa at deliberately
+            different complexity levels — <b>Baobab</b> (minimal), <b>Eshi</b> (heavily integrated,
+            50 Ethiopian universities), and <b>ACE Digital</b> (middle). That comparison produced
+            the best framework anyone presented: how much Open edX do you actually need?
+          </p>
+          <p>
+            <b>Frank Nagle</b> — Harvard Business School economist and the Linux Foundation's
+            Advising Chief Economist. His research supplies the numbers the whole
+            contribute-vs-fork argument rests on: Open edX would cost ~$42M to rebuild,
+            contributors get 2× the productivity benefit of free riders, and
+            maintaining a private fork costs the average company ~5,000 hours per release
+            cycle, about $250k. The last figure comes from a 560-respondent Linux Foundation
+            survey covering open source broadly, not Open edX specifically.
+          </p>
+          <p>
+            <b>Santander Universidades</b> (~17M users) and <b>IBM SkillsBuild</b> (22M of a
+            30M-by-2030 pledge met) are the two largest corporate deployments — both using Open edX
+            as social infrastructure rather than as a training tool.
+          </p>
+          <div class="why"><b>Why it matters to you</b>
+            These are the reference implementations to point a sceptical client at. ASU's
+            right-sizing framework in particular is directly reusable: pick your complexity tier by
+            project scope, sustainable investment, team capability and learner-experience goal —
+            not by what the platform can technically do.
+          </div>
+        </div></details>
+      </div>
+    </div>
+  </section>
+
+    <section class="group" id="people-directory">
+      <h2>Speaker directory</h2>
+      <p class="lede">Every person who appears on stage across the 57 recorded sessions — their
+      role, their organisation, the talk they were in, and a button that jumps straight to the
+      second they start speaking. Filter by role, organisation or topic.</p>
+      <div class="meta-row">
+      <span><b>90</b> people</span>
+      <span><b>122</b> appearances</span>
+      <span><b>41</b> organisations</span>
+      <span><b>57</b> talks</span>
+      <span><b>291,121</b> words of transcript</span>
+    </div>
+<section class="group" id="directory">
+    <div class="filters">
+      <div class="filters-inner">
+        <div class="field">
+          <label for="q">Search name, role, org or talk</label>
+          <input id="q" type="search" placeholder="e.g. accessibility, Ethiopia, WGU, Felipe" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="fRole">Role</label>
+          <select id="fRole"><option value="">All roles</option></select>
+        </div>
+        <div class="field">
+          <label for="fOrg">Organisation</label>
+          <select id="fOrg"><option value="">All organisations</option></select>
+        </div>
+        <div class="field">
+          <label for="fTopic">Topic</label>
+          <select id="fTopic"><option value="">All topics</option></select>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="clear" id="clear" type="button">Clear</button>
+        </div>
+      </div>
+      <div class="resultline" id="resultline">Showing all appearances</div>
+    </div>
+
+    <div class="people" id="people">
+      <div class="phead">
+        <div>Person</div><div>Organisation</div><div>Talk &amp; topic</div><div>Source</div>
+      </div>
+      <div id="rows"></div>
+    </div>
+  </section>
+<section class="group" id="orgs">
+    <div class="group-head">
+      <h2>Who actually filled the room</h2>
+      <span class="count">appearances by organisation</span>
+    </div>
+    <p class="lede">
+      Five organisations account for just over half of every appearance on stage — the platform's
+      steward, its two largest service providers, one very committed university, and one
+      university's digital arm.
+    </p>
+    <p>
+      One project cuts across more sessions than any other. Ethiopia's e-SHE programme — a single
+      Open edX platform shared by all 50 public universities — is the subject or the worked example
+      in six separate talks, presented by four different organisations: Arizona State University,
+      the Ethiopian Ministry of Education, Shayashone and OpenCraft. If you want one thread to
+      pull, that is the densest one in the conference.
+    </p>
+    <div class="figure">
+      <p class="fig-title">Five organisations supplied 52% of the people who spoke</p>
+      <p class="fig-sub">
+        Counting appearances, not headcount — someone who presented three times counts three
+        times. Organisations with a single appearance are grouped into "everyone else".
+      </p>
+      <div class="bars" id="orgbars"></div>
+    </div>
+  </section>
+<section class="group" id="reading">
+    <div class="group-head">
+      <h2>How to read this</h2>
+    </div>
+    <div class="accordion">
+      <details>
+        <summary><b>The jump button goes to the exact second</b> <span>— not to the top of the video</span></summary>
+        <div class="acc-body">
+          <p>Every row's source chip is a YouTube link with a timestamp baked in. It lands on the
+          moment that person is introduced or starts speaking — usually the sentence where they
+          say their own name and job title.</p>
+          <p><b>Where the timestamps came from:</b> I rebuilt each transcript from the raw caption
+          files, which carry a start time on every line. The text you'd read in a plain transcript
+          has that timing stripped out; going back to the caption source put it back.</p>
+        </div>
+      </details>
+      <details>
+        <summary><b>Hover any underlined organisation name</b> <span>— you get a one-line explanation of what it is</span></summary>
+        <div class="acc-body">
+          <p>Roughly forty organisations appear here and most of them are not household names.
+          Where a name is underlined with a dashed line, hovering it — or tabbing to it and
+          pressing nothing at all — shows a plain-language line on who they are and what they
+          do in this ecosystem. Escape dismisses it.</p>
+        </div>
+      </details>
+      <details>
+        <summary><b>One row per appearance, not per person</b> <span>— several people spoke at three or more sessions</span></summary>
+        <div class="acc-body">
+          <p>Jenna Makowski of Axim appears five times and Felipe Montoya of eduNEXT four. Five more
+          people — Stephanie Khurana, Laura, Arlena Mangan, Elizabeth Gordon and Ildi — appear three
+          times each. Searching a name pulls up every session they were in, which is usually the
+          more useful view.</p>
+        </div>
+      </details>
+      <details>
+        <summary><b>Roles are grouped into eight buckets for filtering</b> <span>— the exact job title is still shown on every row</span></summary>
+        <div class="acc-body">
+          <p>There are 111 distinct job titles in here, which is far too many to put in a dropdown.
+          The filter groups them into eight — executive and strategy, engineering, product and
+          design, learning design, research and data, business and partnerships, government and
+          public sector, students and alumni — while the row itself always shows the title as the
+          person gave it.</p>
+        </div>
+      </details>
+      <details>
+        <summary><b>Some speakers are never named out loud</b> <span>— those rows say so instead of guessing</span></summary>
+        <div class="acc-body">
+          <p>Six presenters introduce themselves as "I work at X" without ever saying their name,
+          and the captions have no speaker labels. Rather than infer a name from context, those
+          rows show the role and organisation and are marked as unnamed. They still filter and
+          link like any other row.</p>
+        </div>
+      </details>
+      <details>
+        <summary><b>Name spellings come from automatic captions</b> <span>— they are best-effort, and a few are visibly mangled</span></summary>
+        <div class="acc-body">
+          <p>YouTube's speech recognition is unreliable on proper nouns, especially names it hasn't
+          heard before. "Stephanie Khurana" is transcribed as "Stephanie Corrona"; "Zelalem Assefa"
+          appears as "Zal Alemayehu Safa". I corrected the ones I could confirm from repeated
+          mentions across sessions and left the rest as heard.</p>
+          <p><b>What that means for you:</b> treat the spelling as a strong hint, not a citation.
+          The jump link is the authoritative record — click it and you can hear the name.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+    </section>
+
+
+  <!-- SOURCES -->
+  <section class="group" id="sources">
+    <div class="group-head"><h2>Sources</h2></div>
+    <div class="srcgrid">
+      <div class="srcblock"><h4>Conference</h4><ul>
+        <li><a href="https://www.youtube.com/playlist?list=PL87xhvJSz2W7pNbo3QEMTdSYoiNxSU2gm">Full talk playlist</a></li>
+        <li><a href="https://www.youtube.com/watch?v=JYUU_S2y_m0">2026 State of Open edX plenary</a></li>
+        <li><a href="https://www.edunext.co/openedx2026/">eduNEXT conference hub</a></li>
+      </ul></div>
+      <div class="srcblock"><h4>Studies &amp; reports</h4><ul>
+        <li>Hoffmann, Nagle &amp; Zhou — <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4693148">The Value of Open Source Software</a> (SSRN) · <a href="https://www.hbs.edu/faculty/Pages/item.aspx?num=65230">HBS</a></li>
+        <li><a href="https://www.edunext.co/wp-content/uploads/2025/04/Open-edx-Global-footprint-report-2024-dec-V1.1.pdf">Open edX Global Footprint Report</a> (prior edition, PDF)</li>
+        <li><a href="https://openedx.org/impact/">Axim impact reports</a></li>
+      </ul></div>
+      <div class="srcblock"><h4>Standards</h4><ul>
+        <li><a href="https://www.imsglobal.org/spec/ob/v3p0/cert">Open Badges 3.0</a> — 1EdTech</li>
+        <li><a href="https://www.w3.org/TR/vc-data-model-2.0/">W3C Verifiable Credentials</a></li>
+        <li><a href="https://blog.dcconsortium.org/explaining-verifiable-credentials-and-open-badges-3-0-5bf2f482b383">VCs and Open Badges 3.0 explained</a> — Kerri Lemoie</li>
+      </ul></div>
+      <div class="srcblock"><h4>Code</h4><ul>
+        <li><a href="https://github.com/openedx/openedx-ai-extensions">openedx/openedx-ai-extensions</a></li>
+        <li><a href="https://github.com/openedx/platform-plugin-aspects">openedx/platform-plugin-aspects</a></li>
+        <li><a href="https://github.com/digitalcredentials">Digital Credentials Consortium</a></li>
+        <li><a href="https://github.com/openwallet-foundation-labs/learner-credential-wallet">Learner Credential Wallet</a></li>
+      </ul></div>
+      <div class="srcblock"><h4>Skills-forward roadmap</h4><ul>
+        <li><a href="https://openedx.org/blog/a-new-era-of-learning-shaping-the-skills-forward-lms/">Shaping the Skills-Forward LMS</a></li>
+        <li><a href="https://www.unicon.net/company/news-media/axim-collaborative-and-unicon-partner-on-open-edx-innovation">Axim × Unicon partnership</a></li>
+      </ul></div>
+      <div class="srcblock"><h4>Programme funding</h4><ul>
+        <li><a href="https://transparencia.gov.pt/pt/fundos-europeus/prr/beneficiarios-projetos/projeto/C20-i01.03/">Portugal PRR — C20-i01.03 project record</a> (€29.7M)</li>
+        <li><a href="https://mastercardfdn.org/en/what-we-do/our-programs/e-learning-for-strengthening-higher-eduction-e-she/">Mastercard Foundation — e-SHE programme</a></li>
+        <li><a href="https://shega.co/news/mastercard-foundation-to-inject-16-8m-to-boost-edtech-in-ethiopia">$16.8M Ethiopia grant announcement</a></li>
+        <li><a href="https://e-she.ethernet.edu.et/about-us/">e-SHE official site</a></li>
+        <li><a href="https://www.base.gov.pt/">Base.gov.pt</a> — Portuguese public contracts database</li>
+      </ul></div>
+      <div class="srcblock"><h4>Background</h4><ul>
+        <li><a href="https://www.harvardmagazine.com/2021/06/sale-of-edx">Harvard Magazine — sale of edX</a></li>
+        <li><a href="https://www.highereddive.com/news/2u-chapter-11-bankruptcy-restructuring/722358/">2U Chapter 11</a></li>
+        <li><a href="https://www.classcentral.com/report/2u-edx-bankruptcy/">Class Central — the triple failure</a> <i>(critical)</i></li>
+      </ul></div>
+    </div>
+  </section>
+
+  <div class="caveat">
+    <h4>Method &amp; accuracy</h4>
+    <p>
+      Synthesized from all 57 conference transcripts. <b>Timestamps</b> were resolved by matching
+      phrases against the caption files, so links land within a few seconds of the claim — usually
+      a beat before it, so you hear the run-up. The one deliberate exception is the ranked
+      <b>watch-list</b>: those recommend a whole talk, so they open at the beginning.
+      <b>Chart colours</b> are the validated data-viz palette, not the page accent — the petrol
+      used for links fails the chroma floor (0.078) and would read as grey in a chart.
+    </p>
+    <p>
+      Names came from auto-generated captions and several were mangled; corrections confirmed
+      against employer: <b>Stephanie Khurana</b>, <b>Courtney Hills McBeth</b>, <b>Kerri Lemoie</b>,
+      <b>Xavier Antoviaque</b>. Profile links appear only where both name and employer were
+      verified. In the vertical chart, higher-ed and corporate counts were stated directly;
+      government was given as a percentage and the remainder is derived.
+      Talk numbers match <code>raw-data/openedx-conference-2026-transcripts/</code>.
+      Organization names throughout the page are clickable for a quick profile.
+    </p>
+  </div>
+
+</div>
+
+<div id="orgcard" hidden role="dialog" aria-label="Organization profile"></div>
+
+<script>
+(function () {
+  var ORGS = {
+    "Axim Collaborative": { alias:["Axim"], kind:"Steward", meta:"Nonprofit · founded 2021",
+      what:"The nonprofit Harvard and MIT created with the ~$800M proceeds of the edX sale to 2U. It doesn't run an LMS — it stewards the Open edX platform and funds the roadmap.",
+      why:"Lives on a one-time endowment, not platform revenue. That's why it funds initiatives instead of selling features, and why 'contribute back' is framed as survival." },
+    "OpenCraft": { kind:"Provider", meta:"Founded 2013 · 14 core contributors",
+      what:"The largest contributor after edX and Axim. Founder Xavier Antoviaque made the first external contribution ever merged into Open edX. Self-managed, no middle managers, fully public handbook.",
+      why:"The partner to pick if you need work upstreamed rather than forked — that's explicit policy. They also drive Learning Pathways." },
+    "eduNEXT": { alias:["Edunext","EduNext"], kind:"Provider", meta:"Founded 2013 · Bogotá",
+      what:"Founded by brothers Felipe and Juan Camilo Montoya. ~500 organizations served, ~100 upgrades. Publishes the annual Global Footprint Report and built the AI Extensions framework.",
+      why:"The source of nearly everything the community knows about its own size and health — including the uncomfortable findings." },
+    "Unicon": { kind:"Provider", meta:"Founded 1993",
+      what:"33 years in ed-tech; has sustained about a dozen open source communities. Formally partnered with Axim on competency and skills-based education, with research alongside C-BEN.",
+      why:"Building the competency and mastery-tracking layer the entire skills-first turn depends on." },
+    "Western Governors University": { alias:["WGU"], kind:"Institution", meta:"Founded 1997 · ~200,000 students",
+      what:"Nonprofit, fully online, competency-based since day one — the model imported from Air Force training by co-founder Governor Roy Romer. First 'mission-aligned organization' in the ecosystem, with 10 dedicated platform engineers.",
+      why:"Competency-based org meets course-shaped platform. That mismatch is the engine behind the skills-not-courses rebuild, and their requirements are setting your future defaults." },
+    "EdPlus": { alias:["ASU","Arizona State University"], kind:"Institution", meta:"Arizona State University",
+      what:"ASU's digital learning arm — runs ASU Online (~4,000 sections a semester) plus three Mastercard Foundation–funded Open edX deployments in Africa at deliberately different complexity tiers: Baobab, e-SHE and ACE Digital.",
+      why:"Source of the 'how much Open edX do you actually need' framework — the most directly reusable thing anyone presented." },
+    "2U": { kind:"Company", meta:"Founded 2008 · Chapter 11 in 2024",
+      what:"Online Program Management company that bought edX for $800M in 2021, largely for its 40M-learner audience. The debt sank it; it filed prepackaged Chapter 11 in July 2024 and emerged private, lender-owned.",
+      why:"It owns the edX brand and edx.org — but not the open-source code, which stayed with Harvard and MIT and passed to Axim." },
+    "edX": { kind:"Platform", meta:"Founded 2012 by Harvard + MIT",
+      what:"The original nonprofit MOOC provider. Its open-source platform became Open edX. The brand and site were sold to 2U in 2021; the code was deliberately kept back.",
+      why:"That split is why Axim, not 2U, stewards the code you build on." },
+    "Digital Credentials Consortium": { alias:["DCC"], kind:"Standards", meta:"Founded 2018 · at MIT Open Learning",
+      what:"16 higher-ed institutions across four continents. Built the Learner Credential Wallet on a 2020 US Dept of Education grant, since handed to the OpenWallet Foundation. Director Kerri Lemoie co-proposed Open Badges 3.0.",
+      why:"Owns the portability layer that skills records depend on." },
+    "Education Design Lab": { kind:"Nonprofit", meta:"10+ years on durable skills",
+      what:"National nonprofit with nine durable-skill competencies and matching micro-credentials. Open edX will be their fourth platform — the previous three couldn't deliver a competency model. Moving to free/OER.",
+      why:"Their credentials produced the conference's one hard outcome number: veterans holding them earned $10,000 more." },
+    "Mastercard Foundation": { kind:"Funder", meta:"Philanthropy",
+      what:"Funds the largest Open edX deployments in Africa, including Ethiopia's e-SHE ($16.8M over five years), Baobab and ACE Digital.",
+      why:"The only one of the big programme funders that publishes its numbers." },
+    "Santander": { alias:["Santander Universidades"], kind:"Enterprise", meta:"~17M users",
+      what:"The bank's CSR education arm. Moved its catalogue onto Open edX for control of the data, and is building an agentic 'learning factory' — ~100 small agents turning market signals into courses and campaigns.",
+      why:"The most aggressive vision anyone presented for AI-operated course production." },
+    "IBM": { kind:"Enterprise", meta:"SkillsBuild",
+      what:"Runs SkillsBuild across 180+ countries and 22 languages, against a pledge to skill 30 million people by 2030 — 22 million already met.",
+      why:"Argues durable human skills outlast the technical ones: 'tech skills get you in the door, durable skills keep you there.'" },
+    "Pearson": { kind:"Enterprise", meta:"Professional Assessments",
+      what:"Runs ~80 technical certification-prep courses on Open edX, delivered with live virtual instructors rather than self-paced.",
+      why:"Their completion rates run 70–96% against 3–5% for a typical MOOC — the strongest argument for instructor-led delivery." },
+    "Schema Education": { alias:["Schema"], kind:"Provider", meta:"Product & design",
+      what:"Design partner on the instructor dashboard rebuild and in-context analytics.",
+      why:"One of the four orgs whose Paris hallway conversation started Learning Pathways." },
+    "Edly": { kind:"Provider", meta:"Technical partner",
+      what:"Technical partner on the Democratizing Durable Skills initiative, migrating Education Design Lab onto the platform.",
+      why:"Also in the Paris pathways conversation." },
+    "Linux Foundation": { kind:"Foundation", meta:"Open source",
+      what:"Hosts LFX Insights, which tracks open source project health — including Open edX. Frank Nagle is its Advising Chief Economist.",
+      why:"Source of the 2× contributor productivity finding and the private-fork cost estimate." },
+    "1EdTech": { kind:"Standards", meta:"Formerly IMS Global",
+      what:"Maintains the Open Badges and CLR specifications. Open Badges 3.0, rebuilt on W3C Verifiable Credentials, was approved final in June 2024.",
+      why:"The standards body whose spec decides whether credentials are portable." },
+    "Clemson": { alias:["Clemson University"], kind:"Institution", meta:"CUCWD · SkilRedi",
+      what:"Its Center for Workforce Development runs SkilRedi — EV and aviation technician training with in-browser digital-twin simulations. 30+ courses, 15,000 learners.",
+      why:"Shows Open edX carrying heavy simulation content on low-spec hardware, down to Chromebooks." },
+    "Shayashone": { alias:["Shayashone PLC"], kind:"Implementer", meta:"Ethiopia",
+      what:"The local implementing partner for Ethiopia's e-SHE programme, alongside the Ministry of Education and ASU.",
+      why:"The in-country delivery arm for the largest Open edX deployment in Africa." },
+    "NSDC": { kind:"Government", meta:"India",
+      what:"India's National Skill Development Corporation, which operates the Skill India Digital Hub for the Ministry of Skill Development & Entrepreneurship.",
+      why:"Runs one of the world's largest government learning platforms — 13M+ registrations." },
+    "Blend-ed": { kind:"Provider", meta:"Design & build",
+      what:"Built the current openedx.org, live about two months before the conference.",
+      why:"Community-facing work: the site is the ecosystem's front door." }
+  };
+
+  // Build lookup: every alias -> canonical key, longest first so "Education Design Lab"
+  // wins over "Design Lab" and "Axim Collaborative" over "Axim".
+  var terms = [];
+  Object.keys(ORGS).forEach(function (k) {
+    terms.push([k, k]);
+    (ORGS[k].alias || []).forEach(function (a) { terms.push([a, k]); });
+  });
+  terms.sort(function (a, b) { return b[0].length - a[0].length; });
+
+  function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+  var rx = new RegExp("\\b(" + terms.map(function (t) { return esc(t[0]); }).join("|") + ")\\b", "g");
+  var lookup = {};
+  terms.forEach(function (t) { lookup[t[0].toLowerCase()] = t[1]; });
+
+  var SKIP = { A:1, BUTTON:1, SUMMARY:1, CODE:1, SCRIPT:1, STYLE:1, H1:1, H2:1, H3:1, H4:1, H5:1, TH:1 };
+  function skippable(node) {
+    for (var el = node.parentNode; el && el !== document.body; el = el.parentNode) {
+      if (SKIP[el.nodeName]) return true;
+      if (el.classList && (el.classList.contains("stat-n") || el.classList.contains("orgref"))) return true;
+    }
+    return false;
+  }
+
+  var root = document.querySelector(".wrap");
+  if (!root) return;
+  var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  var targets = [], n;
+  while ((n = walker.nextNode())) {
+    if (n.nodeValue.length > 2 && rx.test(n.nodeValue) && !skippable(n)) targets.push(n);
+    rx.lastIndex = 0;
+  }
+
+  targets.forEach(function (node) {
+    var frag = document.createDocumentFragment(), last = 0, m;
+    rx.lastIndex = 0;
+    while ((m = rx.exec(node.nodeValue))) {
+      if (m.index > last) frag.appendChild(document.createTextNode(node.nodeValue.slice(last, m.index)));
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "orgref";
+      b.setAttribute("data-org", lookup[m[0].toLowerCase()]);
+      b.setAttribute("aria-expanded", "false");
+      b.textContent = m[0];
+      frag.appendChild(b);
+      last = m.index + m[0].length;
+    }
+    if (last < node.nodeValue.length) frag.appendChild(document.createTextNode(node.nodeValue.slice(last)));
+    node.parentNode.replaceChild(frag, node);
+  });
+
+  /* ---- jargon: hover/focus for a one-line plain-English definition ---- */
+  var JARGON = {
+    "CBE":"Competency-Based Education — you progress by proving you can do something, not by finishing a course or sitting out a term.",
+    "XBlock":"Open edX's plugin format. Every video, quiz and problem inside a course is an XBlock.",
+    "MFE":"Micro-Frontend — one page of Open edX built as its own small app, so it can be replaced or rebranded without touching the rest.",
+    "RBAC":"Role-Based Access Control — defining what each kind of user is allowed to do, instead of hardcoding it into the software.",
+    "CEL":"Common Expression Language — a small rule language from Google. Here it lets admins write completion rules as editable data rather than code.",
+    "VPAT":"Voluntary Product Accessibility Template — the standard form a vendor fills in stating how well its product meets accessibility rules. Procurement teams ask for it by name.",
+    "VPATs":"Voluntary Product Accessibility Templates — the standard form a vendor fills in stating how well its product meets accessibility rules. Procurement teams ask for it by name.",
+    "WCAG":"Web Content Accessibility Guidelines — the international standard for making web content usable by people with disabilities. 2.2 is the current version.",
+    "ORA":"Open Response Assessment — the Open edX component for essays and peer-graded work. Currently the only place rubrics exist.",
+    "CCX":"Custom Course for edX — a lightweight copy of a course that a teacher can run for their own group, with their own dates and roster.",
+    "ADRs":"Architecture Decision Records — short public documents recording a technical decision and the reasoning behind it.",
+    "Aspects":"Open edX's analytics stack — it collects learner activity data and turns it into dashboards.",
+    "Paragon":"Open edX's design system — the shared interface components and styles every frontend is built from.",
+    "Casbin":"An open-source permissions library. Open edX's new roles system is built on top of it.",
+    "Studio":"Open edX's course authoring tool — where instructors actually build a course.",
+    "LTS":"Long-Term Support — a release that keeps getting security fixes for longer, so you aren't forced to upgrade every six months.",
+    "OER":"Open Educational Resources — teaching material published free for anyone to use, copy and adapt.",
+    "CRM":"Customer Relationship Management — sales software like Salesforce, built to track deals and contacts, not courses.",
+    "PRD":"Product Requirements Document — a written spec for a feature that hasn't been built yet.",
+    "MVP":"Minimum Viable Product — the smallest useful version of a feature, shipped first.",
+    "Open Badges":"An open standard for a digital certificate that carries proof of what was achieved and can be checked by anyone, without contacting the issuer.",
+    "Verifiable Credentials":"A W3C web standard for tamper-evident digital certificates that can be verified cryptographically, without phoning the institution that issued them.",
+    "micro-credentials":"Small certificates for a single skill or short course, rather than a full degree.",
+    "Teak":"Open edX release, June 2025.",
+    "Ulmo":"Open edX release, Dec 2025.",
+    "Verawood":"Open edX release, June 2026 — the current one at the time of the conference. Releases are named after trees, in alphabetical order, twice a year.",
+    "Willow":"Open edX release, Dec 2026 — the next one, and the target for the skills work.",
+    "Nutmeg":"Open edX release, June 2022 — four years old at the time of the conference.",
+    "Juniper":"Open edX release, June 2020.",
+    "Koa":"Open edX release, Dec 2020."
+  };
+
+  var jkeys = Object.keys(JARGON).sort(function (a, b) { return b.length - a.length; });
+  // Plain \b on both sides — no lookbehind, so this parses on older Safari too.
+  var jrx = new RegExp("\\b(" + jkeys.map(esc).join("|") + ")\\b", "g");
+
+  var jwalk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  var jtargets = [], jn;
+  while ((jn = jwalk.nextNode())) {
+    if (jn.nodeValue.length > 2 && jrx.test(jn.nodeValue) && !skippable(jn)) jtargets.push(jn);
+    jrx.lastIndex = 0;
+  }
+  jtargets.forEach(function (node) {
+    var frag = document.createDocumentFragment(), last = 0, m;
+    jrx.lastIndex = 0;
+    while ((m = jrx.exec(node.nodeValue))) {
+      var at = m.index + m[0].indexOf(m[1]);
+      if (at > last) frag.appendChild(document.createTextNode(node.nodeValue.slice(last, at)));
+      var s = document.createElement("span");
+      s.className = "jt";
+      s.tabIndex = 0;
+      s.setAttribute("data-j", m[1]);
+      s.textContent = m[1];
+      frag.appendChild(s);
+      last = at + m[1].length;
+    }
+    if (last < node.nodeValue.length) frag.appendChild(document.createTextNode(node.nodeValue.slice(last)));
+    node.parentNode.replaceChild(frag, node);
+  });
+
+  // One shared, position:fixed tip so it can never be clipped by a scrolling table.
+  var tip = document.createElement("div");
+  tip.id = "jtip";
+  tip.setAttribute("role", "tooltip");
+  tip.hidden = true;
+  document.body.appendChild(tip);
+
+  function hideTip() { tip.hidden = true; }
+  function showTip(el) {
+    var def = JARGON[el.getAttribute("data-j")];
+    if (!def) return;
+    tip.textContent = def;
+    tip.hidden = false;
+    var r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    var left = Math.min(Math.max(8, r.left + r.width / 2 - tw / 2),
+                        document.documentElement.clientWidth - tw - 8);
+    var top = r.top - th - 8;
+    if (top < 8) top = r.bottom + 8;
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+  }
+
+  document.addEventListener("mouseover", function (e) {
+    var el = e.target.closest && e.target.closest("span.jt");
+    if (el) showTip(el); else if (!tip.hidden) hideTip();
+  });
+  document.addEventListener("focusin", function (e) {
+    var el = e.target.closest && e.target.closest("span.jt");
+    if (el) showTip(el); else hideTip();
+  });
+  document.addEventListener("scroll", hideTip, true);
+
+  var card = document.getElementById("orgcard"), current = null;
+
+  function close() {
+    card.hidden = true;
+    if (current) { current.setAttribute("aria-expanded", "false"); current = null; }
+  }
+
+  function open(btn) {
+    var key = btn.getAttribute("data-org"), o = ORGS[key];
+    if (!o) return;
+    if (current === btn && !card.hidden) { close(); return; }
+    close();
+    card.innerHTML =
+      '<button class="oc-close" type="button" aria-label="Close">&times;</button>' +
+      '<div class="oc-kind">' + o.kind + '</div>' +
+      '<h5>' + key + '</h5>' +
+      '<div class="oc-meta">' + o.meta + '</div>' +
+      '<p>' + o.what + '</p>' +
+      '<p class="oc-why"><b>Why it matters</b>' + o.why + '</p>';
+    card.hidden = false;
+    var r = btn.getBoundingClientRect(), cw = card.offsetWidth, ch = card.offsetHeight;
+    var left = Math.min(Math.max(8, r.left + window.scrollX - 10), window.scrollX + document.documentElement.clientWidth - cw - 8);
+    var top = r.bottom + window.scrollY + 8;
+    if (r.bottom + ch + 16 > window.innerHeight && r.top > ch + 16) top = r.top + window.scrollY - ch - 8;
+    card.style.left = left + "px";
+    card.style.top = top + "px";
+    btn.setAttribute("aria-expanded", "true");
+    current = btn;
+  }
+
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest ? e.target.closest("button.orgref") : null;
+    if (btn) { e.preventDefault(); open(btn); return; }
+    if (e.target.closest && e.target.closest(".oc-close")) { close(); return; }
+    if (!card.hidden && e.target.closest && !e.target.closest("#orgcard")) close();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
+    hideTip();
+    if (!card.hidden) { var c = current; close(); if (c) c.focus(); }
+  });
+  window.addEventListener("resize", close);
+})();
+</script>
+
+<script>
+/* ===== speaker directory ===== */
+(function () {
+
+/* --------------------------------------------------------------
+   Talks: number -> [title, youtube id, [topics]]
+   -------------------------------------------------------------- */
+var TALKS = {
+  1:["Student Perspectives on Success and Learning Outcomes (Plenary Panel)","B0T-_YDT5fw",["Student voice","Competency-based education","Accessibility"]],
+  2:["Collaborate on the Core, Compete on the Edges: The Value and ROI of Open Source","BXAbUK2Mb6c",["Open source strategy","Business & adoption"]],
+  3:["The National Learning Ledger: Scaling Skills and Economic Mobility (Plenary Panel)","Zt-aReychEw",["National scale","Skills & workforce"]],
+  4:["Expanding the Human Possibility Frontier: Student Learning and Success Amplified at Scale","T8EttITSygU",["Competency-based education","Skills & workforce","Student voice"]],
+  5:["2026 State of Open edX Plenary Session","JYUU_S2y_m0",["Platform roadmap","AI","Open source strategy"]],
+  6:["Skill & Scale the Future","hZLcl86XVag",["Competency-based education","Skills & workforce"]],
+  7:["Making Pathways a Reality in the Open edX Platform","sovUFqdn1kw",["Platform roadmap","Content authoring"]],
+  8:["Modernizing the Instructor Dashboard: From Legacy Tab to Unified Product Experience","IU960QXkKHQ",["Platform architecture","Content authoring"]],
+  9:["From Intent to Evidence: A Practical Accessibility Diagnosis Framework","lFe4W5K2ELM",["Accessibility"]],
+  10:["Sovereignty at Scale: Verifiable Credentials, Open LERs, and Learner Agency","R6D0isZd7O4",["Credentials","Skills & workforce"]],
+  11:["Democratizing Durable Skills with Open edX: Building a Skills-First Open Platform","e0Itdq0OlZk",["Skills & workforce","Competency-based education","Credentials"]],
+  12:["How can the Open edX platform power job-ready skills, education to employment?","Osof_u4izL0",["Competency-based education","Skills & workforce","Platform roadmap"]],
+  13:["The Credential Co-writer: Generative AI for Authoring Open Badges 3.0","zt9I0gnjcWY",["Credentials","AI"]],
+  14:["AI Extensions for Open edX: a community commons for adoptable AI","OeW4I1uA_mw",["AI","Platform architecture"]],
+  15:["Data exactly where you need it: Introducing In-Context Analytics in Studio","Mw8m_uWoAH4",["Analytics & data","Content authoring"]],
+  16:["Integrating Open edX Course Creation Workflows with Salesforce","eMdqetSq_l4",["Operations & governance","National scale"]],
+  17:["The Upgrade Dilemma: Lessons from Real-World Open edX Site Migrations","1Dy74W4kjRc",["Operations & governance","Platform architecture"]],
+  18:["Authoring Reuse and Content Libraries in Open edX","Xfvb4BADnxY",["Content authoring","Platform roadmap"]],
+  19:["Leadership Roundtable: Catalyzing an Open Source Renaissance in Higher Education","IQjH9p2B8dA",["Open source strategy","Business & adoption"]],
+  20:["Lazuli: Smarter Design with AI Agents and Learning Science","TQhUKz50faw",["AI","Learning design"]],
+  21:["From LMS to Learning Factory: Agentic AI in the Course Lifecycle","jBDPOHY9gwc",["AI","Content authoring"]],
+  22:["If Skills Are Stuck, So Are Learners","W5kM5HGjabs",["Skills & workforce","Credentials","Platform architecture"]],
+  23:["One Platform, Three Models: Right-Sizing the Open edX LMS Across Africa","yzCWDKmKqyc",["National scale","Platform architecture"]],
+  24:["Why Some Open edX Adoptions Keep Moving — While Others Stall","LCQu1E3ueWQ",["Business & adoption"]],
+  25:["Building Sustainable Open edX Businesses: A 10+ Year Playbook","CQYkJg_1HO4",["Business & adoption","Open source strategy"]],
+  26:["Embedding AI in Open edX Courses, What Improved and Why","wjgGCuhZBZ4",["AI","Competency-based education"]],
+  27:["What We Learned Mapping the Open edX Global Footprint","6f2JGU1rbx0",["Analytics & data","Business & adoption"]],
+  28:["Integrating multi-channel payment gateway — bridging access through local currency","sGaI0OKC12U",["National scale","Platform architecture"]],
+  29:["Open edX in Action: 10 Stories of Flexibility and Global Impact","Qa6mf6o1hk8",["National scale","Business & adoption"]],
+  30:["Open edX Through a Screenreader","UFGlTOoTbfs",["Accessibility","Content authoring"]],
+  31:["National K-12 Learning Ecosystem on Open edX — Portugal EduQA case study","xQ0-MdGOqtk",["National scale","AI","Platform architecture"]],
+  32:["The Open edX Platform and the Professional Training Opportunity","rlvFtnABSj8",["Business & adoption"]],
+  33:["TeachSIM on Open edX: A Simulation-Driven Platform for Teacher Learning","gHY1FynAXBE",["AI","Learning design","Assessment"]],
+  34:["The Open edX platform Beyond the LMS: Real Impact in Uruguay","PnkFkj8O4UA",["National scale","Business & adoption"]],
+  35:["Developing an AI-Assisted Feedback & Grading Tool (Lightning Talk)","wMZENuRzMc0",["AI","Assessment"]],
+  36:["Aspects in Production: Custom Data Pipelines and Scaling to 7M Events/Day","P66-h3Pbflo",["Analytics & data","Platform architecture"]],
+  39:["Data Protection in Open edX: FERPA, GDPR and Regulated Environments (Lightning Talk)","CQuWaUB84VY",["Operations & governance"]],
+  40:["Dynamic Branding: Using Design Tokens for Multi-Tenant Sites (Lightning Talk)","HfBn45zWzSg",["Platform architecture","Content authoring"]],
+  41:["Open edX Mobile + On-Device AI (Lightning Talk)","7NEM9X0uIds",["Mobile & offline","AI"]],
+  42:["Themable XBlocks with Runtime Theming (Lightning Talk)","p_AbiBgZqGY",["Platform architecture","Content authoring"]],
+  44:["From Legacy to Modern Open edX: A Realistic Upgrade Path for Stranded Institutions","eo2f1kBmnTs",["Operations & governance","Business & adoption"]],
+  49:["How to Build Plugin-Friendly Django Apps","Z6T3osYbdUk",["Platform architecture"]],
+  51:["The Future of Roles & Permissions in Open edX: A Guide to the New RBAC System","yq8McFseOJA",["Platform architecture","Operations & governance"]],
+  53:["Synthetic Students at Scale, As AI-Simulated Learners","BjHOgxBTIUo",["AI","Learning design","Accessibility"]],
+  54:["Leveraging Content Libraries in Your Courses (Workshop)","GiJz0YkSOic",["Content authoring"]],
+  55:["Leveraging AI in Your Courses (Workshop)","Gy7yFTejA1s",["AI","Content authoring"]],
+  56:["Architecting the Open Workforce: How Clemson's SkilRedi Scales Microcredentials","t6NcyynOFOo",["Skills & workforce","Credentials","Platform architecture"]],
+  57:["Using Content Experiments to Make Data-Informed Decisions About Learning Design","5DAfrQST6x0",["Learning design","AI","Analytics & data"]],
+  58:["Continuous Mastery, Integrating Assessment Into Learning","A0Uvti7ytpM",["Assessment","AI","Competency-based education"]],
+  59:["Designing Within Constraints: Offline-Capable Learning in the Open edX Mobile App","dy0UOuMqfOY",["Mobile & offline","National scale","Accessibility"]],
+  60:["Digital Accessibility Workshop","6bpu7ZCMwPs",["Accessibility","Learning design"]],
+  61:["Skills, AI, and the imperative for new assessment models","i8o2gxOqxNY",["Assessment","Skills & workforce","Credentials"]],
+  62:["It's all OLX to us! Using HTML and XHTML to make cool content at MIT xPRO","zVLS_yn_e-A",["Content authoring"]],
+  63:["From Overwhelmed to Optimized: Managing High-Enrollment Open edX Courses","TMlx_ELJ2_A",["Operations & governance","National scale"]],
+  64:["Using AI in Open edX Today: Practical Tools for Course Authors","6BH1LXuCuHE",["AI","Content authoring"]],
+  65:["Vibecoding Custom Course Components: AI-Powered Design for Non-Developer Educators","lrJDAk8Wbsk",["AI","Content authoring"]],
+  66:["The Rise of Virtual Instructor Led Training","5JTRtfZ7_mA",["Learning design","Business & adoption"]]
+};
+
+/* --------------------------------------------------------------
+   People: [name, job title as stated, organisation, role bucket,
+            talk number, seconds into video, note?]
+   name === "" means the speaker is never named in the captions.
+   -------------------------------------------------------------- */
+var EXEC="Executive & strategy", ENG="Engineering", PROD="Product & design",
+    LD="Learning design & instruction", RES="Research & data", BIZ="Business & partnerships",
+    GOV="Government & public sector", STU="Students & alumni";
+
+var PEOPLE = [
+  // 01
+  ["","Panel host, introduces and moderates the student panel","Western Governors University",EXEC,1,8,"Speaks throughout as WGU but is never named on the recording."],
+  ["Stacy Romney","Associate Professor of Physical Therapy; runs the physical therapist assistant program","Salt Lake Community College",LD,1,29,""],
+  ["Divine Osadeco","Enterprise Product Delivery Coach; WGU master's graduate and commencement speaker","Western Governors University",STU,1,52,""],
+  ["Maria Zarate Renteria","Computer science student; intern in the university's technology department","Western Governors University",STU,1,72,"Also interns with Develop for Good."],
+  ["Charles Okello","Accessibility advocate and learning-design student","Arizona State University",STU,1,113,""],
+  // 02
+  ["Frank Nagle","Economist; researcher on the value and ROI of open source","Linux Foundation / MIT",RES,2,9,"Gave both frank@linuxfoundation.org and an mit.edu address on stage."],
+  // 03
+  ["Stephanie Khurana","Chief Executive Officer","Axim Collaborative",EXEC,3,8,""],
+  ["Courtney Hills Macbeth","Chief Academic Officer and Provost","Western Governors University",EXEC,3,112,""],
+  ["Feanil Patel","Conference MC; engineering and AI strategy","Axim Collaborative",ENG,3,1643,""],
+  ["Manny Washington","Principal, institutional partnerships; panel moderator","Pearson",BIZ,3,1678,""],
+  ["Zelalem Assefa","CEO for ICT and Digital Education","Ethiopian Ministry of Education",GOV,3,1718,"Transcribed by the captions as “Zal Alemayehu Safa”."],
+  ["Javier Pozo","Chief Technology Officer, Santander Universidades","Banco Santander",EXEC,3,1760,""],
+  ["Lydia Logan","Vice President, Global Education and Workforce Development","IBM",EXEC,3,1804,""],
+  // 04
+  ["Stephanie Khurana","Chief Executive Officer; panel moderator","Axim Collaborative",EXEC,4,11,""],
+  ["Courtney Hills Macbeth","Chief Academic Officer and Provost","Western Governors University",EXEC,4,156,""],
+  ["Ajita","President and Chief Executive Officer","Calbright College",EXEC,4,299,"Surname not stated on the recording."],
+  ["Kate","President","Rio Salado College",EXEC,4,545,"Surname not stated on the recording."],
+  ["Bill","Inaugural Dean, College of Lifetime Learning","Georgia Tech",EXEC,4,752,"Surname not stated on the recording."],
+  // 05
+  ["Jenna Makowski","Product lead for the Open edX platform","Axim Collaborative",PROD,5,7,""],
+  ["Feanil Patel","Engineering; AI strategy","Axim Collaborative",ENG,5,928,""],
+  // 06
+  ["Jenna Makowski","Product lead; panel moderator","Axim Collaborative",PROD,6,8,""],
+  ["Katriva Jones-Monroe","Dean of Learning Innovation","Calbright College",LD,6,150,""],
+  ["Jenny Sanders","Vice President, Experiential Product and Technology","Western Governors University",PROD,6,191,""],
+  ["Amardeep Kolana","Vice President, Education and Learning","Central New Mexico Community College",EXEC,6,231,""],
+  ["Luke Dowden","Vice Chancellor for Digital Learning and Transformation","Alamo Colleges District",EXEC,6,272,""],
+  ["Mary","Product lead for the competency-based education work","Unicon",PROD,6,4746,"Presents the platform half of the session."],
+  // 07
+  ["Cassie Zamporini","Product Manager and Designer","OpenCraft",PROD,7,30,""],
+  ["Piotr Surowiec","Software Developer","OpenCraft",ENG,7,30,""],
+  // 08
+  ["Sally","Product and design lead on the instructor dashboard","Schema Education",PROD,8,11,""],
+  ["Diana","Software engineer; built the new instructor dashboard front end","Western Governors University",ENG,8,74,""],
+  ["Eddie","Designer; redesigned the instructor tools","Schema Education",PROD,8,606,""],
+  // 09
+  ["Christian","Accessibility research and consulting","eduNEXT",LD,9,90,""],
+  ["Laura","Support and Success Lead","eduNEXT",LD,9,713,""],
+  // 10
+  ["Kerri","Director; co-author of the Open Badges 3.0 proposal","Digital Credentials Consortium",RES,10,30,""],
+  ["Taylor","Digital credentials lead; builds the Achievement Wallet","Western Governors University",PROD,10,642,""],
+  ["Sandy Wright","Audience question on portability of credentials","2U / edX",BIZ,10,600,""],
+  ["Arlena Mangan","IT project manager; worked on Pocket and the Trusted Learner Network","EdPlus at Arizona State University",PROD,10,1468,""],
+  ["Tara Chahoud","Director of Research","DataKind",RES,10,1617,""],
+  // 11
+  ["Asad","Technical partner lead on the durable-skills initiative","Edly",PROD,11,8,""],
+  ["Tara Laughlin","Senior Director of Skills Visibility","Education Design Lab",LD,11,28,""],
+  // 12
+  ["Mary","Product lead; ran the CBE evaluation of the platform","Unicon",PROD,12,8,""],
+  ["Jenna Makowski","Product lead for the Open edX platform","Axim Collaborative",PROD,12,1051,""],
+  // 13
+  ["Gillian","Outreach and communications; leads the Credential Co-writer","Digital Credentials Consortium",PROD,13,9,""],
+  ["Felipe Montoya","Co-founder; built the Open edX side of the tool","eduNEXT",ENG,13,878,""],
+  ["Kerri","Director","Digital Credentials Consortium",RES,13,1152,""],
+  ["Peter","Audience question on multilingual credentials","Organisation not stated",LD,13,1111,""],
+  // 14
+  ["Felipe Montoya","Co-founder; lead architect of the AI extensions framework","eduNEXT",ENG,14,8,""],
+  ["Serina","Documentation and community","Axim Collaborative",PROD,14,1550,""],
+  // 15
+  ["Chelsea Rathburn","Product Manager for Open edX","Axim Collaborative",PROD,15,8,""],
+  ["Sarah Burns","Software Engineer","Axim Collaborative",ENG,15,8,""],
+  // 16
+  ["Elizabeth Gordon","Director of International Learning Technologies and Instructional Design","EdPlus at Arizona State University",LD,16,28,""],
+  ["Arlena Mangan","IT Project Manager","EdPlus at Arizona State University",PROD,16,51,""],
+  // 17
+  ["Fox","Open source developer and Open edX core contributor","OpenCraft",ENG,17,7,""],
+  // 18
+  ["Jenna Makowski","Product lead for content libraries","Axim Collaborative",PROD,18,9,""],
+  ["Sam","Engineer on the content libraries feature","Open edX libraries team",ENG,18,338,"Employer not stated on the recording."],
+  // 19
+  ["Patrick","Panel moderator; former Executive Director of the Open Source Initiative","Open Source Initiative (former)",EXEC,19,8,"Surname not stated on the recording."],
+  ["Kate","Chief Executive Officer","Unicon",EXEC,19,219,"Surname garbled by the captions."],
+  ["Stephanie Khurana","Chief Executive Officer","Axim Collaborative",EXEC,19,387,""],
+  ["Troy Davis","Vice President of University Technology","Western Governors University",EXEC,19,570,"Previously CIO at BYU Pathway."],
+  // 20
+  ["David Piccaro","Founding President and Chief Executive Officer","Learning Design Alliance (Lazuli)",EXEC,20,8,""],
+  // 21
+  ["Javier Pozo","Chief Technology Officer, Santander Universidades","Banco Santander",EXEC,21,8,""],
+  // 22
+  ["","Presenter on skills-mobility infrastructure","Organisation not stated",PROD,22,8,"Refers to “our chief architect” but never gives a name or employer."],
+  // 23
+  ["Elizabeth Gordon","Director of International Learning Technologies and Instructional Design","EdPlus at Arizona State University",LD,23,8,""],
+  ["Christie De Zarzuela","Instructional Program Manager","EdPlus at Arizona State University",LD,23,198,""],
+  ["Chelsea Rathburn","Product Manager; audience question on missing features","Axim Collaborative",PROD,23,1311,""],
+  // 24
+  ["Andrew Wis","Sales Manager","eduNEXT",BIZ,24,28,""],
+  ["Luc Carlos Perez","Head of Hosting","eduNEXT",ENG,24,48,"Goes by Lucas."],
+  // 25
+  ["Xavier Antoviaque","Founder","OpenCraft",EXEC,25,8,""],
+  ["Yosuke","Co-presenter","OpenCraft",BIZ,25,29,""],
+  // 26
+  ["Michael","Leads part of program development, a shared services function","Western Governors University",LD,26,8,""],
+  ["Leslie","Leads the assessment and psychometrics teams","Western Governors University",RES,26,68,""],
+  // 27
+  ["Jorge Orlando","Head of Consulting; author of the Global Footprint report","eduNEXT",RES,27,8,""],
+  ["Juan","Co-founder","eduNEXT",EXEC,27,1570,""],
+  ["Jenna Makowski","Product lead; answers on learner-count methodology","Axim Collaborative",PROD,27,1592,""],
+  // 28
+  ["Basilio","Manages the e-SHE programme from the Ethiopian side","Shayashone",GOV,28,30,""],
+  ["Hamo","Graduate of the Open edX training; built the payment integration","Shayashone",ENG,28,424,"Appears via a pre-recorded video."],
+  // 29
+  ["Ali Hugo","Product Manager","OpenCraft",PROD,29,8,""],
+  // 30
+  ["Charles Okello","Disability-inclusive learning design professional","Mastercard Foundation Baobab platform",LD,30,8,"Also a master's student at Arizona State University."],
+  ["Kim Welch","Instructional designer; supervises the accessibility work on e-SHE","Arizona State University",LD,30,134,""],
+  // 31
+  ["Rupender","Chief Solutions Architect","Skillup",ENG,31,8,""],
+  ["Pedro Bales","Engineering lead on gamification and AI","Skillup",ENG,31,898,""],
+  // 32
+  ["Jordan","Business Development","OpenCraft",BIZ,32,8,""],
+  // 33
+  ["","Data scientist; former middle-school maths teacher","University of Virginia",RES,33,11,"Presents TeachSIM but is never named on the recording."],
+  // 34
+  ["Christian","Consulting; Uruguay case study","eduNEXT",BIZ,34,9,""],
+  ["Laura","Support and Success Lead","eduNEXT",LD,34,513,""],
+  ["Daniel","Representative of INEFOP, Uruguay's workforce ministry agency","INEFOP (Uruguay)",GOV,34,600,"Appears via a pre-recorded video, in Spanish with subtitles."],
+  ["Enzo Bonales","Head of Educational Platform","Ceibal (Uruguay)",GOV,34,804,""],
+  // 35
+  ["","Co-founder; a professor building an AI grading tool","Grade Labs",RES,35,7,"Never gives a name on the recording."],
+  // 36
+  ["Sarah Burns","Software Engineer; Aspects and Superset customisation","Axim Collaborative",ENG,36,8,""],
+  ["Felipe Montoya","Co-founder; scaling Aspects to 15M events a day","eduNEXT",ENG,36,593,""],
+  // 39
+  ["","Presenter on FERPA and GDPR compliance","Organisation not stated",BIZ,39,7,"Never gives a name on the recording."],
+  // 40
+  ["Igor Romaniuk","Front-end Lead","Rangle",ENG,40,2,""],
+  // 41
+  ["Ivan Stepanov","Mobile Lead","Brackets Gang",ENG,41,2,""],
+  // 42
+  ["Shreyas Soupti","Front-end engineer","OpenCraft",ENG,42,2,"Spelling as heard in the captions."],
+  // 44
+  ["Juan","Co-founder; leads the Open edX Global Footprint initiative","eduNEXT",EXEC,44,9,""],
+  ["Natalia Rodriguez Contar","Project management lead for platform migrations","eduNEXT",PROD,44,362,""],
+  // 49
+  ["Dave Ormsby","Platform architect","Axim Collaborative",ENG,49,8,""],
+  // 51
+  ["Rodrigo Mendes","Staff Software Engineer; core contributor to openedx-authz","Western Governors University",ENG,51,8,""],
+  // 53
+  ["Rob Clark","Leads Program Experience Strategy within Program Development","Western Governors University",PROD,53,8,"Twenty-plus years in UX and UI design before education."],
+  // 54
+  ["Colin","Learning technologist; runs about 150 courses on edx.org","Harvard University",LD,54,8,""],
+  ["Ildi","Learning and course design lead","Pearson",LD,54,491,""],
+  ["Sam","Engineer on the content libraries feature","Open edX libraries team",ENG,54,1734,"Employer not stated on the recording."],
+  // 55
+  ["Felipe Montoya","Co-founder; runs the AI extensions workshop","eduNEXT",ENG,55,8,""],
+  ["Ildi","Learning and course design lead","Pearson",LD,55,1234,""],
+  // 56
+  ["Trey King","Director of IT, College of Engineering, Computing and Applied Sciences","Clemson University",EXEC,56,8,"Also works for the Clemson Center for Workforce Development."],
+  ["Zach","Platform developer on SkillReady","Clemson University",ENG,56,174,"Has used Open edX since 2013."],
+  // 57
+  ["Adam Hill","Principal Learning Strategist","2U / edX",LD,57,8,"Also freelances with San Francisco State and Stanford."],
+  ["Lauren Liss","Curriculum and Content Strategist, Learning Innovation","2U / edX",LD,57,53,"Also teaches at Northwestern University."],
+  // 58
+  ["David Parkinson","Senior Vice President of Program Development","Western Governors University",EXEC,58,8,""],
+  ["Tommy Bishop","Leads the Program Experience Futures team","Western Governors University",PROD,58,112,""],
+  // 59
+  ["Kim Welch","Principal International Instructional Designer and Trainer","Arizona State University",LD,59,8,"Doctorate in learning technologies; master's in second-language acquisition."],
+  // 60
+  ["","Accessibility workshop lead; former physics and maths teacher","Organisation not stated",LD,60,8,"Never gives a name on the recording."],
+  // 61
+  ["Jeff","Simulation design; former commercial pilot","Muzzy Lane",PROD,61,8,""],
+  ["Megan","Education Designer","Education Design Lab",LD,61,412,""],
+  ["Tara Laughlin","Senior Director of Skills Visibility; speaks from the floor on employer testing","Education Design Lab",LD,61,951,""],
+  // 62
+  ["Sha Nani","Senior Educational Technologist, workforce learning","MIT xPRO / MIT Open Learning",LD,62,8,"Name badly garbled by the captions; spelling is a best guess."],
+  // 63
+  ["Christie De Zarzuela","Instructional Program Manager","EdPlus at Arizona State University",LD,63,31,""],
+  ["Arlena Mangan","IT Project Manager","EdPlus at Arizona State University",PROD,63,72,""],
+  ["Elizabeth Gordon","Director of International Learning Technologies; answers from the floor","EdPlus at Arizona State University",LD,63,1001,""],
+  // 64
+  ["Pooja","Senior Developer; also on the business development team","OpenCraft",ENG,64,8,""],
+  // 65
+  ["Laura","Support and Success Leader","eduNEXT",LD,65,8,"Built the talk with Ana Paula Gomez, eduNEXT's instructional design expert."],
+  // 66
+  ["Ildi","Learning design consultant on virtual instructor-led training","Pearson",LD,66,8,""]
+];
+
+/* --------------------------------------------------------------
+   Jargon glossary — prose only, never the results list.
+   -------------------------------------------------------------- */
+var GLOSSARY = {
+  "e-SHE":"Ethiopia's national e-learning programme — one Open edX platform shared by all 50 public universities, funded by the Mastercard Foundation and built with Arizona State University.",
+  "Baobab":"A social learning network for alumni of Mastercard Foundation programmes across Africa. Courses are one part of it; there are also events, chat and a feed.",
+  "EdPlus":"Arizona State University's unit for digital teaching at scale. It runs ASU Online and the international grant platforms.",
+  "Axim Collaborative":"The non-profit that stewards the Open edX platform — it sets the roadmap and funds core development, but does not run a learning site of its own.",
+  "eduNEXT":"A long-running Open edX service provider based in Colombia; hosts and consults for around 500 organisations.",
+  "OpenCraft":"An Open edX development company founded in 2013, structured with no middle managers and an open public handbook.",
+  "Unicon":"A digital learning services and consulting firm that has worked in education for 33 years.",
+  "Skillup":"The company that built Portugal's national K-12 learning ecosystem on Open edX.",
+  "Muzzy Lane":"A simulation-authoring company used to build scenario-based skills assessments.",
+  "Ceibal":"Uruguay's national one-laptop-per-child programme, now also a teacher-development platform.",
+  "INEFOP":"Uruguay's national institute for employment and vocational training.",
+  "Shayashone":"The Ethiopian company implementing the e-SHE programme locally.",
+  "Rangle":"A digital product consultancy working on Open edX front-end theming.",
+  "MIT xPRO":"MIT's workforce-learning arm, part of MIT Open Learning.",
+  "Edly":"An Open edX provider acting as technical partner on the durable-skills initiative.",
+  "Schema Education":"A product and design studio that worked on the Open edX instructor dashboard.",
+  "Digital Credentials Consortium":"A network of 16 universities across four continents building shared infrastructure for standards-based digital credentials.",
+  "Education Design Lab":"A national non-profit that designs and credentials durable human skills.",
+  "Calbright College":"California's public, fully online, competency-based college for working adults.",
+  "Rio Salado College":"A large Arizona community college built around removing barriers to entry, with weekly start dates.",
+  "Alamo Colleges District":"A community college district in San Antonio whose stated goal is ending poverty through education.",
+  "Clemson":"Clemson University's Center for Workforce Development, whose SkilRedi platform trains electric-vehicle and aviation technicians.",
+  "Grade Labs":"A startup building an AI grading tool, founded by two professors.",
+  "DataKind":"A non-profit that puts data science to work on social problems.",
+  "Western Governors University":"A fully online, competency-based non-profit university with around 200,000 students. The first organisation formally aligned with the Open edX project, with ten engineers working on the platform.",
+  "Arizona State University":"Runs several of the largest Open edX deployments in the world through its EdPlus unit, including Ethiopia's national platform.",
+  "Pearson":"The education company; its professional assessments arm runs about 80 technical certification courses on Open edX.",
+  "Banco Santander":"The bank's Santander Universidades arm runs a free upskilling academy for roughly 17 million users.",
+  "Ethiopian Ministry of Education":"Sets policy and runs the shared platform for all 50 of Ethiopia's public universities.",
+  "Learning Design Alliance":"A two-year-old organisation building AI authoring tools grounded in learning science; its product is called Lazuli.",
+  "Brackets Gang":"A mobile development company prototyping on-device AI for the Open edX mobile app.",
+  "2U / edX":"The company that operates edx.org, the largest single Open edX site.",
+  "Linux Foundation":"The non-profit that hosts many of the world's largest open source projects and publishes research on their economic value.",
+  "Salt Lake Community College":"The Utah community college hosting the conference city; represented here by a physical therapy program.",
+  "Central New Mexico Community College":"The largest higher education institution in New Mexico, reviving competency-based education across 180 programs.",
+  "University of Virginia":"Its education lab has spent a decade researching simulation-based teacher training.",
+  "Harvard University":"Runs about 150 courses on edx.org through HarvardX."
+};
+
+/* --------------------------------------------------------------
+   Render
+   -------------------------------------------------------------- */
+(function () {
+  var rowsEl = document.getElementById("rows");
+  var resultEl = document.getElementById("resultline");
+  var q = document.getElementById("q");
+  var fRole = document.getElementById("fRole");
+  var fOrg = document.getElementById("fOrg");
+  var fTopic = document.getElementById("fTopic");
+
+  function hhmmss(s) {
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+    function p(n) { return (n < 10 ? "0" : "") + n; }
+    return h + ":" + p(m) + ":" + p(x);
+  }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  // Longest glossary key contained in an organisation name, so
+  // "EdPlus at Arizona State University" still resolves to "EdPlus".
+  var GKEYS = Object.keys(GLOSSARY).sort(function (a, b) { return b.length - a.length; });
+  function orgKey(org) {
+    for (var i = 0; i < GKEYS.length; i++) {
+      if (org.indexOf(GKEYS[i]) !== -1) return GKEYS[i];
+    }
+    return "";
+  }
+
+  // Build the searchable records once.
+  var RECS = PEOPLE.map(function (p) {
+    var t = TALKS[p[4]];
+    return {
+      name: p[0], role: p[1], org: p[2], bucket: p[3], gkey: orgKey(p[2]),
+      num: p[4], secs: p[5], note: p[6],
+      title: t[0], vid: t[1], topics: t[2],
+      hay: (p[0] + " " + p[1] + " " + p[2] + " " + p[3] + " " + t[0] + " " +
+            t[2].join(" ") + " talk " + p[4]).toLowerCase()
+    };
+  });
+
+  function uniq(list) {
+    var seen = {}, out = [];
+    list.forEach(function (v) { if (v && !seen[v]) { seen[v] = 1; out.push(v); } });
+    return out.sort();
+  }
+  function fill(sel, values) {
+    values.forEach(function (v) {
+      var o = document.createElement("option");
+      o.value = v; o.textContent = v;
+      sel.appendChild(o);
+    });
+  }
+  fill(fRole, uniq(RECS.map(function (r) { return r.bucket; })));
+  fill(fOrg, uniq(RECS.map(function (r) { return r.org; })));
+  var allTopics = [];
+  RECS.forEach(function (r) { allTopics = allTopics.concat(r.topics); });
+  fill(fTopic, uniq(allTopics));
+
+  function rowHTML(r) {
+    var url = "https://www.youtube.com/watch?v=" + r.vid + "&t=" + r.secs + "s";
+    var nm = r.name
+      ? '<span class="pname">' + esc(r.name) + "</span>"
+      : '<span class="pname anon">Speaker not named on the recording</span>';
+    var tags = r.topics.map(function (t) {
+      return '<span class="ptag">' + esc(t) + "</span>";
+    }).join("");
+    // Where we have a definition for the organisation, make it hoverable.
+    var org = r.gkey
+      ? esc(r.org).replace(esc(r.gkey),
+          '<span class="jt" tabindex="0" data-j="' + esc(r.gkey) + '">' + esc(r.gkey) + "</span>")
+      : esc(r.org);
+    return '<div class="prow">' +
+      "<div>" + nm + '<span class="prole">' + esc(r.role) + "</span></div>" +
+      '<div class="porg">' + org + "<small>" + esc(r.bucket) + "</small></div>" +
+      '<div class="ptalk"><span class="pttitle">' + esc(r.title) +
+        '</span><span class="ptags">' + tags + "</span></div>" +
+      '<div class="pjump"><a class="src" href="' + url + '" target="_blank" rel="noopener">' +
+        "Talk " + r.num + " · " + hhmmss(r.secs) + "</a></div>" +
+      (r.note ? '<div class="pnote">' + esc(r.note) + "</div>" : "") +
+      "</div>";
+  }
+
+  function apply() {
+    var term = q.value.trim().toLowerCase();
+    var role = fRole.value, org = fOrg.value, topic = fTopic.value;
+    var hits = RECS.filter(function (r) {
+      if (role && r.bucket !== role) return false;
+      if (org && r.org !== org) return false;
+      if (topic && r.topics.indexOf(topic) === -1) return false;
+      if (term && r.hay.indexOf(term) === -1) return false;
+      return true;
+    });
+    rowsEl.innerHTML = hits.length
+      ? hits.map(rowHTML).join("")
+      : '<div class="empty">No one matches those filters. Try clearing one of them.</div>';
+    var names = {}, orgs = {};
+    hits.forEach(function (r) { if (r.name) names[r.name] = 1; orgs[r.org] = 1; });
+    var nNamed = Object.keys(names).length;
+    var nAnon = hits.filter(function (r) { return !r.name; }).length;
+    resultEl.innerHTML = "Showing <b>" + hits.length + "</b> appearance" +
+      (hits.length === 1 ? "" : "s") + " · <b>" + (nNamed + nAnon) +
+      "</b> people · <b>" + Object.keys(orgs).length + "</b> organisations";
+  }
+
+  [q, fRole, fOrg, fTopic].forEach(function (el) {
+    el.addEventListener("input", apply);
+    el.addEventListener("change", apply);
+  });
+  document.getElementById("clear").addEventListener("click", function () {
+    q.value = ""; fRole.value = ""; fOrg.value = ""; fTopic.value = "";
+    apply(); q.focus();
+  });
+  apply();
+
+  /* ---- appearances by organisation, as a CSS bar chart ---- */
+  var counts = {};
+  RECS.forEach(function (r) { counts[r.org] = (counts[r.org] || 0) + 1; });
+  var pairs = Object.keys(counts).map(function (k) { return [k, counts[k]]; })
+                    .sort(function (a, b) { return b[1] - a[1]; });
+  var top = pairs.filter(function (p) { return p[1] > 1; });
+  var tail = pairs.filter(function (p) { return p[1] === 1; });
+  if (tail.length) top.push(["Everyone else (" + tail.length + " organisations)", tail.length]);
+  var max = top.reduce(function (m, p) { return Math.max(m, p[1]); }, 1);
+  document.getElementById("orgbars").innerHTML = top.map(function (p) {
+    return '<div class="bar-row"><span class="bar-lab">' + esc(p[0]) + "</span>" +
+      '<span class="bar-track"><span class="bar-fill" style="width:' +
+      Math.round((p[1] / max) * 100) + '%"></span></span>' +
+      '<span class="bar-val">' + p[1] + "</span></div>";
+  }).join("");
+})();
+
+/* Tooltip engine — wraps glossary terms in the prose (never the results list).
+   Delegated handlers mean dynamically rendered rows work too. */
+(function () {
+  if (typeof GLOSSARY !== "object" || !GLOSSARY) return;
+  var root = document.querySelector(".wrap");
+  if (!root) return;
+  var keys = Object.keys(GLOSSARY).sort(function (a, b) { return b.length - a.length; });
+  function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+  var rx = new RegExp("\\b(" + keys.map(esc).join("|") + ")\\b", "g");
+
+  var SKIP = { A:1, BUTTON:1, SUMMARY:1, CODE:1, SCRIPT:1, STYLE:1, OPTION:1, SELECT:1,
+               H1:1, H2:1, H3:1, H4:1, H5:1, TH:1, LABEL:1 };
+  function skippable(node) {
+    for (var el = node.parentNode; el && el !== document.body; el = el.parentNode) {
+      if (SKIP[el.nodeName]) return true;
+      if (el.classList && (el.classList.contains("people") ||
+                           el.classList.contains("stat-n") ||
+                           el.classList.contains("jt"))) return true;
+    }
+    return false;
+  }
+
+  var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  var targets = [], n;
+  while ((n = walker.nextNode())) {
+    if (n.nodeValue.length > 2 && rx.test(n.nodeValue) && !skippable(n)) targets.push(n);
+    rx.lastIndex = 0;
+  }
+  targets.forEach(function (node) {
+    var frag = document.createDocumentFragment(), last = 0, m;
+    rx.lastIndex = 0;
+    while ((m = rx.exec(node.nodeValue))) {
+      if (m.index > last) frag.appendChild(document.createTextNode(node.nodeValue.slice(last, m.index)));
+      var s = document.createElement("span");
+      s.className = "jt";
+      s.tabIndex = 0;
+      s.setAttribute("data-j", m[1]);
+      s.textContent = m[1];
+      frag.appendChild(s);
+      last = m.index + m[1].length;
+    }
+    if (last < node.nodeValue.length) frag.appendChild(document.createTextNode(node.nodeValue.slice(last)));
+    node.parentNode.replaceChild(frag, node);
+  });
+
+  var tip = document.createElement("div");
+  tip.id = "jtip";
+  tip.setAttribute("role", "tooltip");
+  tip.hidden = true;
+  document.body.appendChild(tip);
+
+  function hideTip() { tip.hidden = true; }
+  function showTip(el) {
+    var def = GLOSSARY[el.getAttribute("data-j")];
+    if (!def) return;
+    tip.textContent = def;
+    tip.hidden = false;
+    var r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    var left = Math.min(Math.max(8, r.left + r.width / 2 - tw / 2),
+                        document.documentElement.clientWidth - tw - 8);
+    var top = r.top - th - 8;
+    if (top < 8) top = r.bottom + 8;
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+  }
+  document.addEventListener("mouseover", function (e) {
+    var el = e.target.closest && e.target.closest("span.jt");
+    if (el) showTip(el); else if (!tip.hidden) hideTip();
+  });
+  document.addEventListener("focusin", function (e) {
+    var el = e.target.closest && e.target.closest("span.jt");
+    if (el) showTip(el); else hideTip();
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") hideTip(); });
+  document.addEventListener("scroll", hideTip, true);
+  window.addEventListener("resize", hideTip);
+})();
+
+})();
+</script>
+
+</body>
+</html>
