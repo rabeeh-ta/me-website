@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import Portfolio from "@/components/Portfolio";
 import { projects } from "@/data/projects";
@@ -41,6 +42,7 @@ export default async function Home() {
 
       {/* socials */}
       <div className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+        <Link href="/apps">apps</Link>
         {socials.map((s) => (
           <a
             key={s.name}
