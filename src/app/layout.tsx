@@ -25,6 +25,11 @@ export default function RootLayout({
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <Script
+          src="https://umami.rabeeta.xyz/script.js"
+          data-website-id="81d3b4dd-d3dd-4de1-8db4-c9d074bd35e9"
+          strategy="afterInteractive"
+        />
+        <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-146KL5YEV2"
           strategy="afterInteractive"
         />
