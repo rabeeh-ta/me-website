@@ -30,6 +30,11 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
         <Script
+          src="https://umami.rabeeta.xyz/recorder.js"
+          data-website-id="81d3b4dd-d3dd-4de1-8db4-c9d074bd35e9"
+          strategy="afterInteractive"
+        />
+        <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-146KL5YEV2"
           strategy="afterInteractive"
         />
